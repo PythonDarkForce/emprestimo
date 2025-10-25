@@ -1,0 +1,271 @@
+/* ============================================
+   WebSocket Styles - Sistema em Tempo Real
+   ============================================ */
+
+/* Container de Notificações */
+#notifications-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+}
+
+/* Notificações Toast */
+.notification-toast {
+    animation: slideInRight 0.3s ease-out;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Flash de Atualização */
+.updated-flash {
+    animation: flashUpdate 1s ease;
+}
+
+@keyframes flashUpdate {
+    0%, 100% {
+        background-color: transparent;
+    }
+    50% {
+        background-color: rgba(255, 193, 7, 0.3);
+    }
+}
+
+/* Badges de Notificação */
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    animation: pulse 2s infinite;
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Indicador de Status de Conexão */
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.status-online {
+    background-color: #28a745;
+    box-shadow: 0 0 5px #28a745;
+    animation: pulse-glow 2s infinite;
+}
+
+.status-offline {
+    background-color: #dc3545;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px #28a745;
+    }
+    50% {
+        box-shadow: 0 0 10px #28a745;
+    }
+}
+
+/* Nav Item com Badge */
+.nav-item {
+    position: relative;
+}
+
+/* Badge no Menu */
+.nav-link .notification-badge {
+    top: -8px;
+    right: -8px;
+}
+
+/* Estado Badge */
+.estado-badge {
+    font-size: 0.85em;
+    padding: 0.25em 0.6em;
+}
+
+/* Card de Equipamento */
+.card-equipamento {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-equipamento:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Toast Container (Bootstrap) */
+.toast-container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 1rem;
+    z-index: 9998;
+}
+
+/* Animação de Fade In para elementos dinâmicos */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Animação de Fade Out */
+.fade-out {
+    animation: fadeOut 0.3s ease-out;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Slide In para elementos de lista */
+.slide-in-list {
+    animation: slideInList 0.3s ease-out;
+}
+
+@keyframes slideInList {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Loading Spinner para WebSocket */
+.ws-loading {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Alert personalizado para notificações importantes */
+.notification-important {
+    border-left: 4px solid #dc3545;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+/* Contador de notificações animado */
+.badge-count-animate {
+    animation: countUp 0.3s ease-out;
+}
+
+@keyframes countUp {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    #notifications-container {
+        top: 60px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .notification-toast {
+        font-size: 0.9rem;
+    }
+    
+    .status-indicator {
+        width: 6px;
+        height: 6px;
+    }
+}
+
+/* Dark mode support (opcional) */
+@media (prefers-color-scheme: dark) {
+    .notification-toast {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+    
+    .updated-flash {
+        background-color: rgba(255, 193, 7, 0.2);
+    }
+}
+
+/* Print (ocultar notificações ao imprimir) */
+@media print {
+    #notifications-container,
+    .notification-badge,
+    .status-indicator,
+    .toast-container {
+        display: none !important;
+    }
+}

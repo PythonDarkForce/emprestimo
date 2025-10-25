@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Requisições Pendentes - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="bi bi-hourglass-split"></i> Requisições Pendentes</h1>
+
+{% if requisicoes %}
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i> 
+    Existem <strong>{{ requisicoes.count }}</strong> requisições pendentes de aprovação.
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Utilizador</th>
+                        <th>Data Requisição</th>
+                        <th>Período</th>
+                        <th>Equipamentos</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requisicoes %}
+                    <tr>
+                        <td><strong>#{{ req.id }}</strong></td>
+                        <td>{{ req.utilizador.get_full_name|default:req.utilizador.username }}</td>
+                        <td>{{ req.data_requisicao|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {{ req.data_inicio_prevista|date:"d/m" }} - {{ req.data_fim_prevista|date:"d/m" }}<br>
+                            <small class="text-muted">({{ req.duracao_prevista }} dias)</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{ req.equipamentos.count }} item(s)</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'detalhe_requisicao' req.id %}" class="btn btn-sm btn-outline-primary me-1">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'aprovar_requisicao' req.id %}" class="btn btn-sm btn-success">
+                                <i class="bi bi-check-circle"></i> Analisar
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-success text-center">
+    <i class="bi bi-check-circle"></i> Não existem requisições pendentes.
+</div>
+{% endif %}
+
+<div class="mt-4">
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar ao Dashboard
+    </a>
+</div>
+{% endblock %}

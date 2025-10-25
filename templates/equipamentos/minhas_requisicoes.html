@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Minhas Requisições - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-list-check"></i> Minhas Requisições</h1>
+    <a href="{% url 'criar_requisicao' %}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Nova Requisição
+    </a>
+</div>
+
+{% if requisicoes %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Data Requisição</th>
+                        <th>Período Previsto</th>
+                        <th>Equipamentos</th>
+                        <th>Estado</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requisicoes %}
+                    <tr>
+                        <td><strong>#{{ req.id }}</strong></td>
+                        <td>{{ req.data_requisicao|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {{ req.data_inicio_prevista|date:"d/m/Y" }}<br>
+                            <small class="text-muted">até {{ req.data_fim_prevista|date:"d/m/Y" }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{ req.equipamentos.count }} item(s)</span>
+                        </td>
+                        <td>
+                            {% if req.estado == 'pendente' %}
+                                <span class="badge bg-warning text-dark">{{ req.get_estado_display }}</span>
+                            {% elif req.estado == 'aprovada' %}
+                                <span class="badge bg-success">{{ req.get_estado_display }}</span>
+                            {% elif req.estado == 'rejeitada' %}
+                                <span class="badge bg-danger">{{ req.get_estado_display }}</span>
+                            {% elif req.estado == 'em_curso' %}
+                                <span class="badge bg-primary">{{ req.get_estado_display }}</span>
+                            {% elif req.estado == 'concluida' %}
+                                <span class="badge bg-secondary">{{ req.get_estado_display }}</span>
+                            {% else %}
+                                <span class="badge bg-dark">{{ req.get_estado_display }}</span>
+                            {% endif %}
+                            
+                            {% if req.esta_atrasada %}
+                            <br><span class="badge bg-danger mt-1">Atrasada</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'detalhe_requisicao' req.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="bi bi-info-circle"></i> Ainda não fez nenhuma requisição.
+    <br><br>
+    <a href="{% url 'criar_requisicao' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Criar Primeira Requisição
+    </a>
+</div>
+{% endif %}
+
+
+{% for equipamento in equipamentos %}
+    <div class="col-md-4 mb-4">
+        <div class="card card-equipamento h-100">
+            {% if equipamento.imagem %}
+            <img src="{{ equipamento.imagem.url }}" class="card-img-top" alt="{{ equipamento.nome }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="bi bi-camera" style="font-size: 4rem; color: #ccc;"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ equipamento.nome }}</h5>
+                <p class="card-text text-muted mb-2">
+                    <small>{{ equipamento.marca }} {{ equipamento.modelo }}</small><br>
+                    <small><strong>Código:</strong> {{ equipamento.codigo_interno }}</small>
+                </p>
+                <span class="badge 
+                    {% if equipamento.estado == 'disponivel' %}bg-success
+                    {% elif equipamento.estado == 'emprestado' %}bg-warning
+                    {% elif equipamento.estado == 'manutencao' %}bg-danger
+                    {% else %}bg-secondary{% endif %}">
+                    {{ equipamento.get_estado_display }}
+                </span>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{% url 'detalhe_equipamento' equipamento.id %}" class="btn btn-sm btn-outline-primary w-100">
+                    <i class="bi bi-eye"></i> Ver Detalhes
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> Nenhum equipamento encontrado com os filtros selecionados.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

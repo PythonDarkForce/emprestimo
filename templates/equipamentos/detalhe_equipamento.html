@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ equipamento.nome }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'listar_equipamentos' %}">Equipamentos</a></li>
+        <li class="breadcrumb-item active">{{ equipamento.codigo_interno }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-4">
+        {% if equipamento.imagem %}
+        <img src="{{ equipamento.imagem.url }}" class="img-fluid rounded mb-3" alt="{{ equipamento.nome }}">
+        {% else %}
+        <div class="bg-light rounded d-flex align-items-center justify-content-center mb-3" style="height: 300px;">
+            <i class="bi bi-camera" style="font-size: 6rem; color: #ccc;"></i>
+        </div>
+        {% endif %}
+        
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">Estado</h6>
+                <span class="badge 
+                    {% if equipamento.estado == 'disponivel' %}bg-success
+                    {% elif equipamento.estado == 'emprestado' %}bg-warning
+                    {% elif equipamento.estado == 'manutencao' %}bg-danger
+                    {% else %}bg-secondary{% endif %} fs-6">
+                    {{ equipamento.get_estado_display }}
+                </span>
+                
+                <hr>
+                
+                <h6>Informação</h6>
+                <p class="mb-1"><strong>Categoria:</strong> {{ equipamento.categoria.nome }}</p>
+                <p class="mb-1"><strong>Valor:</strong> {{ equipamento.valor_estimado }}€</p>
+                <p class="mb-1"><strong>Aquisição:</strong> {{ equipamento.data_aquisicao|date:"d/m/Y" }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <h1>{{ equipamento.nome }}</h1>
+        <p class="lead text-muted">{{ equipamento.marca }} {{ equipamento.modelo }}</p>
+        
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Detalhes</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Código Interno:</strong> {{ equipamento.codigo_interno }}</p>
+                        <p><strong>Número de Série:</strong> {{ equipamento.numero_serie }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Marca:</strong> {{ equipamento.marca }}</p>
+                        <p><strong>Modelo:</strong> {{ equipamento.modelo }}</p>
+                    </div>
+                </div>
+                {% if equipamento.descricao %}
+                <hr>
+                <p><strong>Descrição:</strong></p>
+                <p>{{ equipamento.descricao }}</p>
+                {% endif %}
+                {% if equipamento.observacoes %}
+                <hr>
+                <p><strong>Observações:</strong></p>
+                <p>{{ equipamento.observacoes }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if equipamento.acessorios.all %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Acessórios Incluídos</h5>
+                <ul class="list-group list-group-flush">
+                    {% for acessorio in equipamento.acessorios.all %}
+                    <li class="list-group-item">
+                        <i class="bi bi-check-circle text-success"></i>
+                        {{ acessorio.nome }} 
+                        <span class="badge bg-secondary">{{ acessorio.quantidade }}x</span>
+                        {% if acessorio.descricao %}
+                        <br><small class="text-muted">{{ acessorio.descricao }}</small>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Histórico de Manutenção -->
+        {% if historico_manutencao %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-tools"></i> Histórico de Manutenção</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Tipo</th>
+                                <th>Descrição</th>
+                                <th>Custo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for manutencao in historico_manutencao %}
+                            <tr>
+                                <td>{{ manutencao.data|date:"d/m/Y" }}</td>
+                                <td><span class="badge bg-info">{{ manutencao.get_tipo_display }}</span></td>
+                                <td>{{ manutencao.descricao|truncatewords:10 }}</td>
+                                <td>{% if manutencao.custo %}{{ manutencao.custo }}€{% else %}-{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Requisições Recentes -->
+        {% if requisicoes_recentes %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Requisições Recentes</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Utilizador</th>
+                                <th>Período</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in requisicoes_recentes %}
+                            <tr>
+                                <td>{{ req.data_requisicao|date:"d/m/Y" }}</td>
+                                <td>{{ req.utilizador.get_full_name|default:req.utilizador.username }}</td>
+                                <td>{{ req.data_inicio_prevista|date:"d/m" }} - {{ req.data_fim_prevista|date:"d/m" }}</td>
+                                <td><span class="badge bg-secondary">{{ req.get_estado_display }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'listar_equipamentos' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+    {% if equipamento.esta_disponivel %}
+    <a href="{% url 'criar_requisicao' %}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Requisitar Este Equipamento
+    </a>
+    {% endif %}
+</div>
+{% endblock %}

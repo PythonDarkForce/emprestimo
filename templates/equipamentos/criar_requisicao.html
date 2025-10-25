@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Nova Requisição - {{ block.super }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Nova Requisição</li>
+    </ol>
+</nav>
+
+<h1 class="mb-4"><i class="bi bi-plus-circle"></i> Nova Requisição de Equipamento</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Datas do Empréstimo *</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="id_data_inicio_prevista" class="form-label small">Data de Início</label>
+                                {{ form.data_inicio_prevista }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_data_fim_prevista" class="form-label small">Data de Fim</label>
+                                {{ form.data_fim_prevista }}
+                            </div>
+                        </div>
+                        {% if form.data_inicio_prevista.errors or form.data_fim_prevista.errors %}
+                        <div class="text-danger mt-2">
+                            {{ form.data_inicio_prevista.errors }}
+                            {{ form.data_fim_prevista.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Equipamentos Necessários *</label>
+                        <div class="card">
+                            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                                {% for checkbox in form.equipamentos %}
+                                <div class="form-check mb-2 p-2 border-bottom">
+                                    {{ checkbox.tag }}
+                                    <label class="form-check-label" for="{{ checkbox.id_for_label }}">
+                                        <strong>{{ checkbox.choice_label }}</strong>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% if form.equipamentos.errors %}
+                        <div class="text-danger mt-2">{{ form.equipamentos.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_motivo" class="form-label">Motivo/Projeto *</label>
+                        {{ form.motivo }}
+                        <small class="form-text text-muted">
+                            Descreva o motivo ou projeto para o qual necessita do equipamento
+                        </small>
+                        {% if form.motivo.errors %}
+                        <div class="text-danger">{{ form.motivo.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_observacoes_requisicao" class="form-label">Observações</label>
+                        {{ form.observacoes_requisicao }}
+                        <small class="form-text text-muted">
+                            Informações adicionais (opcional)
+                        </small>
+                    </div>
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send"></i> Submeter Requisição
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-info-circle"></i> Informações</h5>
+                <ul class="small">
+                    <li>Selecione os equipamentos que necessita</li>
+                    <li>Indique as datas previstas de utilização</li>
+                    <li>A sua requisição será analisada pela equipa</li>
+                    <li>Receberá uma notificação sobre a decisão</li>
+                    <li>Após aprovação, pode levantar o equipamento</li>
+                </ul>
+                
+                <hr>
+                
+                <h6><i class="bi bi-exclamation-triangle"></i> Lembre-se:</h6>
+                <ul class="small">
+                    <li>Devolva o equipamento na data acordada</li>
+                    <li>Cuide do equipamento como se fosse seu</li>
+                    <li>Comunique imediatamente qualquer problema</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

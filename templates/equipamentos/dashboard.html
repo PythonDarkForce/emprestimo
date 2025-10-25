@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Dashboard</h1>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-camera"></i> Total de Equipamentos</h5>
+                <h2 class="mb-0">{{ total_equipamentos }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-check-circle"></i> Disponíveis</h5>
+                <h2 class="mb-0">{{ equipamentos_disponiveis }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-box-arrow-right"></i> Emprestados</h5>
+                <h2 class="mb-0">{{ equipamentos_emprestados }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user.is_staff and requisicoes_atrasadas %}
+<div class="alert alert-danger">
+    <h5><i class="bi bi-exclamation-triangle"></i> Requisições Atrasadas</h5>
+    <p>Existem {{ requisicoes_atrasadas.count }} requisições atrasadas que necessitam atenção.</p>
+    <a href="{% url 'listar_requisicoes_pendentes' %}" class="btn btn-sm btn-danger">Ver Requisições</a>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-list"></i> Minhas Requisições Recentes</h5>
+                <a href="{% url 'minhas_requisicoes' %}" class="btn btn-sm btn-primary">Ver Todas</a>
+            </div>
+            <div class="card-body">
+                {% if minhas_requisicoes %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Data</th>
+                                <th>Período</th>
+                                <th>Equipamentos</th>
+                                <th>Estado</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in minhas_requisicoes %}
+                            <tr>
+                                <td>#{{ req.id }}</td>
+                                <td>{{ req.data_requisicao|date:"d/m/Y" }}</td>
+                                <td>{{ req.data_inicio_prevista|date:"d/m" }} - {{ req.data_fim_prevista|date:"d/m" }}</td>
+                                <td>{{ req.equipamentos.count }}</td>
+                                <td>
+                                    <span class="badge bg-{{ req.estado|yesno:'warning,success,danger' }}">
+                                        {{ req.get_estado_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'detalhe_requisicao' req.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> Ver
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-4">Ainda não fez nenhuma requisição.</p>
+                <div class="text-center">
+                    <a href="{% url 'criar_requisicao' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Criar Primeira Requisição
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'listar_equipamentos' %}" class="btn btn-lg btn-primary">
+        <i class="bi bi-camera"></i> Ver Equipamentos Disponíveis
+    </a>
+    <a href="{% url 'criar_requisicao' %}" class="btn btn-lg btn-success">
+        <i class="bi bi-plus-circle"></i> Nova Requisição
+    </a>
+</div>
+{% endblock %}

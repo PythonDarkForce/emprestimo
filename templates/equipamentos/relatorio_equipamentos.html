@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Relatório de Equipamentos - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-bar-chart"></i> Relatório de Utilização de Equipamentos</h1>
+    <button onclick="window.print()" class="btn btn-secondary">
+        <i class="bi bi-printer"></i> Imprimir
+    </button>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Equipamentos por Número de Requisições</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Posição</th>
+                                <th>Código</th>
+                                <th>Equipamento</th>
+                                <th>Categoria</th>
+                                <th>Estado Atual</th>
+                                <th>Nº de Requisições</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for equipamento in equipamentos %}
+                            <tr>
+                                <td><strong>{{ forloop.counter }}º</strong></td>
+                                <td>{{ equipamento.codigo_interno }}</td>
+                                <td>
+                                    <a href="{% url 'detalhe_equipamento' equipamento.id %}">
+                                        {{ equipamento.nome }}
+                                    </a>
+                                    <br><small class="text-muted">{{ equipamento.marca }} {{ equipamento.modelo }}</small>
+                                </td>
+                                <td>{{ equipamento.categoria.nome }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if equipamento.estado == 'disponivel' %}bg-success
+                                        {% elif equipamento.estado == 'emprestado' %}bg-warning
+                                        {% elif equipamento.estado == 'manutencao' %}bg-danger
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ equipamento.get_estado_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ equipamento.num_requisicoes }}</span>
+                                </td>
+                                <td>{{ equipamento.valor_estimado }}€</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-trophy"></i> Top 5 Mais Requisitados</h5>
+            </div>
+            <div class="card-body">
+                <ol>
+                    {% for equipamento in equipamentos|slice:":5" %}
+                    <li>
+                        <strong>{{ equipamento.nome }}</strong> 
+                        <span class="badge bg-primary">{{ equipamento.num_requisicoes }} requisições</span>
+                    </li>
+                    {% endfor %}
+                </ol>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Menos Utilizados</h5>
+            </div>
+            <div class="card-body">
+                <ol>
+                    {% for equipamento in equipamentos|slice:"-5:" reversed %}
+                    <li>
+                        <strong>{{ equipamento.nome }}</strong> 
+                        <span class="badge bg-secondary">{{ equipamento.num_requisicoes }} requisições</span>
+                    </li>
+                    {% endfor %}
+                </ol>
+                <small class="text-muted">
+                    Considere avaliar se estes equipamentos são ainda necessários ou se necessitam de mais divulgação.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar ao Dashboard
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Remover elementos desnecessários na impressão
+    window.onbeforeprint = function() {
+        document.querySelectorAll('.btn, nav, footer').forEach(el => {
+            el.style.display = 'none';
+        });
+    };
+    
+    window.onafterprint = function() {
+        document.querySelectorAll('.btn, nav, footer').forEach(el => {
+            el.style.display = '';
+        });
+    };
+</script>
+{% endblock %}

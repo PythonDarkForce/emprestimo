@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Registar Devolução - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Registar Devolução - Requisição #{{ requisicao.id }}</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">Informações da Requisição</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Utilizador:</strong> {{ requisicao.utilizador.get_full_name|default:requisicao.utilizador.username }}</p>
+                <p><strong>Data Prevista de Devolução:</strong> {{ requisicao.data_fim_prevista|date:"d/m/Y" }}</p>
+                
+                {% if requisicao.esta_atrasada %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> 
+                    <strong>Atenção:</strong> Esta devolução está atrasada!
+                </div>
+                {% endif %}
+                
+                <hr>
+                
+                <h6>Equipamentos a Devolver:</h6>
+                <ul class="list-group">
+                    {% for equipamento in requisicao.equipamentos.all %}
+                    <li class="list-group-item">
+                        <strong>{{ equipamento.nome }}</strong> - {{ equipamento.codigo_interno }}
+                        <br><small class="text-muted">{{ equipamento.marca }} {{ equipamento.modelo }}</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0">Registar Devolução</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 
+                        Verifique o estado de todos os equipamentos antes de finalizar a devolução.
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_observacoes_devolucao" class="form-label">Observações sobre o Estado dos Equipamentos</label>
+                        {{ form.observacoes_devolucao }}
+                        <small class="form-text text-muted">
+                            Registe o estado dos equipamentos, eventuais danos, ou outras observações relevantes
+                        </small>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="confirmarEstado" required>
+                        <label class="form-check-label" for="confirmarEstado">
+                            Confirmo que verifiquei o estado de todos os equipamentos
+                        </label>
+                    </div>
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {{ form.errors }}
+                    </div>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'detalhe_requisicao' requisicao.id %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Confirmar Devolução
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-clipboard-check"></i> Checklist de Devolução</h5>
+                <ul class="small">
+                    <li>Verificar integridade física de cada equipamento</li>
+                    <li>Confirmar presença de todos os acessórios</li>
+                    <li>Limpar equipamento se necessário</li>
+                    <li>Testar funcionamento básico</li>
+                    <li>Registar qualquer dano ou anomalia</li>
+                    <li>Arquivar os equipamentos corretamente</li>
+                </ul>
+                
+                <hr>
+                
+                <p class="small text-muted mb-0">
+                    Após confirmar a devolução, os equipamentos ficarão novamente disponíveis para requisição.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
