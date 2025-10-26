@@ -6,9 +6,12 @@ from django.utils import timezone
 from django.http import HttpResponseForbidden, JsonResponse
 from django.views.decorators.http import require_http_methods
 import json
+import logging
 from .models import Equipamento, Requisicao, CategoriaEquipamento, HistoricoManutencao
 from .forms import RequisicaoForm, AprovarRequisicaoForm, DevolucaoForm, EquipamentoForm
 from .services import processar_devolucao
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -305,10 +308,13 @@ def api_processar_devolucao(request, pk):
         status_code = 200 if resultado['devolucao_efetivada'] else 400
         return JsonResponse(response_data, status=status_code)
         
-    except Exception as e:
+    except Exception:
+        # Log the exception for debugging but don't expose details to users
+        logger.exception('Error processing return for loan %s', pk)
+        
         return JsonResponse({
             'success': False,
-            'message': f'Erro ao processar devolução: {str(e)}'
+            'message': 'Erro ao processar devolução. Por favor, tente novamente ou contacte o suporte.'
         }, status=500)
 
 
