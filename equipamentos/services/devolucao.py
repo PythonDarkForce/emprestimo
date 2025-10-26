@@ -1,6 +1,7 @@
 """
 Domain service for processing equipment returns
 """
+from datetime import datetime
 from django.db import transaction
 from django.utils import timezone
 from channels.layers import get_channel_layer
@@ -63,7 +64,9 @@ def processar_devolucao(
         if observacao:
             emprestimo.observacoes_devolucao = observacao
         
-        # Save without triggering signals during this update
+        # Save the requisition
+        # Note: We set _skip_signal to prevent recursive signal firing
+        # This is checked in signals.py to avoid infinite loops
         emprestimo._skip_signal = True
         emprestimo.save()
         
@@ -77,7 +80,7 @@ def processar_devolucao(
         _emitir_evento_devolucao(
             emprestimo_id=emprestimo.id,
             status='concluida',
-            data_devolucao=data_devolucao.isoformat() if hasattr(data_devolucao, 'isoformat') else str(data_devolucao),
+            data_devolucao=data_devolucao.isoformat() if isinstance(data_devolucao, datetime) else str(data_devolucao),
             item_ids=item_ids
         )
         

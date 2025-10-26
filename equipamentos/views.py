@@ -5,8 +5,10 @@ from django.db.models import Q, Count
 from django.utils import timezone
 from django.http import HttpResponseForbidden, JsonResponse
 from django.views.decorators.http import require_http_methods
+import json
 from .models import Equipamento, Requisicao, CategoriaEquipamento, HistoricoManutencao
 from .forms import RequisicaoForm, AprovarRequisicaoForm, DevolucaoForm, EquipamentoForm
+from .services import processar_devolucao
 
 
 @login_required
@@ -266,9 +268,6 @@ def api_contadores(request):
 @require_http_methods(["POST"])
 def api_processar_devolucao(request, pk):
     """API endpoint to process equipment return"""
-    import json
-    from .services import processar_devolucao
-    
     try:
         # Parse request body if present
         observacao = None
