@@ -6,9 +6,9 @@ Este projeto utiliza **Tabler** como framework principal de UI.
 
 ### Tabler
 
-- **Versão**: 1.0.0-beta20
-- **CDN CSS**: https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css
-- **CDN JS**: https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/js/tabler.min.js
+- **Versão**: 1.4.0
+- **CDN CSS**: https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css
+- **CDN JS**: https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js
 - **Documentação**: https://tabler.io/docs
 
 ### Ícones
