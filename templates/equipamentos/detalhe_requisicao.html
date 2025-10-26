@@ -3,184 +3,220 @@
 {% block title %}Requisição #{{ requisicao.id }} - {{ block.super }}{% endblock %}
 
 {% block content %}
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'minhas_requisicoes' %}">Requisições</a></li>
-        <li class="breadcrumb-item active">Requisição #{{ requisicao.id }}</li>
-    </ol>
-</nav>
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Requisição #{{ requisicao.id }}</h1>
-    {% if requisicao.estado == 'pendente' %}
-        <span class="badge bg-warning text-dark fs-5">{{ requisicao.get_estado_display }}</span>
-    {% elif requisicao.estado == 'aprovada' %}
-        <span class="badge bg-success fs-5">{{ requisicao.get_estado_display }}</span>
-    {% elif requisicao.estado == 'rejeitada' %}
-        <span class="badge bg-danger fs-5">{{ requisicao.get_estado_display }}</span>
-    {% elif requisicao.estado == 'em_curso' %}
-        <span class="badge bg-primary fs-5">{{ requisicao.get_estado_display }}</span>
-    {% elif requisicao.estado == 'concluida' %}
-        <span class="badge bg-secondary fs-5">{{ requisicao.get_estado_display }}</span>
-    {% endif %}
-</div>
-
-<div class="row">
-    <div class="col-md-8">
-        <!-- Informações Gerais -->
-        <div class="card mb-3">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informações da Requisição</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Solicitante:</strong> {{ requisicao.utilizador.get_full_name|default:requisicao.utilizador.username }}</p>
-                        <p><strong>Data da Requisição:</strong> {{ requisicao.data_requisicao|date:"d/m/Y H:i" }}</p>
-                        <p><strong>Período Previsto:</strong><br>
-                           De {{ requisicao.data_inicio_prevista|date:"d/m/Y" }}<br>
-                           Até {{ requisicao.data_fim_prevista|date:"d/m/Y" }}<br>
-                           <small class="text-muted">({{ requisicao.duracao_prevista }} dias)</small>
-                        </p>
-                    </div>
-                    <div class="col-md-6">
-                        {% if requisicao.aprovado_por %}
-                        <p><strong>Aprovado por:</strong> {{ requisicao.aprovado_por.get_full_name|default:requisicao.aprovado_por.username }}</p>
-                        <p><strong>Data de Aprovação:</strong> {{ requisicao.data_aprovacao|date:"d/m/Y H:i" }}</p>
-                        {% endif %}
-                        
-                        {% if requisicao.data_entrega_real %}
-                        <p><strong>Data de Entrega:</strong> {{ requisicao.data_entrega_real|date:"d/m/Y H:i" }}</p>
-                        {% endif %}
-                        
-                        {% if requisicao.data_devolucao_real %}
-                        <p><strong>Data de Devolução:</strong> {{ requisicao.data_devolucao_real|date:"d/m/Y H:i" }}</p>
-                        {% endif %}
-                    </div>
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <div class="page-pretitle">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'minhas_requisicoes' %}">Requisições</a></li>
+                            <li class="breadcrumb-item active">Requisição #{{ requisicao.id }}</li>
+                        </ol>
+                    </nav>
                 </div>
-                
-                <hr>
-                
-                <h6>Motivo/Projeto:</h6>
-                <p>{{ requisicao.motivo }}</p>
-                
-                {% if requisicao.observacoes_requisicao %}
-                <h6>Observações da Requisição:</h6>
-                <p>{{ requisicao.observacoes_requisicao }}</p>
-                {% endif %}
-                
-                {% if requisicao.observacoes_aprovacao %}
-                <hr>
-                <h6>Observações da Aprovação:</h6>
-                <div class="alert alert-info">{{ requisicao.observacoes_aprovacao }}</div>
-                {% endif %}
-                
-                {% if requisicao.observacoes_devolucao %}
-                <h6>Observações da Devolução:</h6>
-                <div class="alert alert-secondary">{{ requisicao.observacoes_devolucao }}</div>
+                <h2 class="page-title">Requisição #{{ requisicao.id }}</h2>
+            </div>
+            <div class="col-auto ms-auto">
+                {% if requisicao.estado == 'pendente' %}
+                    <span class="badge bg-warning badge-lg">{{ requisicao.get_estado_display }}</span>
+                {% elif requisicao.estado == 'aprovada' %}
+                    <span class="badge bg-success badge-lg">{{ requisicao.get_estado_display }}</span>
+                {% elif requisicao.estado == 'rejeitada' %}
+                    <span class="badge bg-danger badge-lg">{{ requisicao.get_estado_display }}</span>
+                {% elif requisicao.estado == 'em_curso' %}
+                    <span class="badge bg-primary badge-lg">{{ requisicao.get_estado_display }}</span>
+                {% elif requisicao.estado == 'concluida' %}
+                    <span class="badge bg-secondary badge-lg">{{ requisicao.get_estado_display }}</span>
                 {% endif %}
             </div>
         </div>
-        
-        <!-- Equipamentos -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-camera"></i> Equipamentos Requisitados</h5>
-            </div>
-            <div class="card-body">
-                <div class="list-group">
-                    {% for equipamento in requisicao.equipamentos.all %}
-                    <div class="list-group-item">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-1">{{ equipamento.nome }}</h6>
-                                <p class="mb-1 text-muted">{{ equipamento.marca }} {{ equipamento.modelo }}</p>
-                                <small class="text-muted">Código: {{ equipamento.codigo_interno }}</small>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-cards">
+            <div class="col-lg-8">
+                <!-- Informações Gerais -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="ti ti-info-circle"></i> Informações da Requisição</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="text-muted">Solicitante</div>
+                                    <div>{{ requisicao.utilizador.get_full_name|default:requisicao.utilizador.username }}</div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="text-muted">Data da Requisição</div>
+                                    <div>{{ requisicao.data_requisicao|date:"d/m/Y H:i" }}</div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="text-muted">Período Previsto</div>
+                                    <div>De {{ requisicao.data_inicio_prevista|date:"d/m/Y" }}</div>
+                                    <div>Até {{ requisicao.data_fim_prevista|date:"d/m/Y" }}</div>
+                                    <small class="text-muted">({{ requisicao.duracao_prevista }} dias)</small>
+                                </div>
                             </div>
-                            <div>
-                                <a href="{% url 'detalhe_equipamento' equipamento.id %}" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-eye"></i> Ver
-                                </a>
+                            <div class="col-md-6">
+                                {% if requisicao.aprovado_por %}
+                                <div class="mb-3">
+                                    <div class="text-muted">Aprovado por</div>
+                                    <div>{{ requisicao.aprovado_por.get_full_name|default:requisicao.aprovado_por.username }}</div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="text-muted">Data de Aprovação</div>
+                                    <div>{{ requisicao.data_aprovacao|date:"d/m/Y H:i" }}</div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if requisicao.data_entrega_real %}
+                                <div class="mb-3">
+                                    <div class="text-muted">Data de Entrega</div>
+                                    <div>{{ requisicao.data_entrega_real|date:"d/m/Y H:i" }}</div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if requisicao.data_devolucao_real %}
+                                <div class="mb-3">
+                                    <div class="text-muted">Data de Devolução</div>
+                                    <div>{{ requisicao.data_devolucao_real|date:"d/m/Y H:i" }}</div>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
+                        
+                        <hr>
+                        
+                        <div class="mb-3">
+                            <div class="text-muted mb-1">Motivo/Projeto</div>
+                            <div>{{ requisicao.motivo }}</div>
+                        </div>
+                        
+                        {% if requisicao.observacoes_requisicao %}
+                        <div class="mb-3">
+                            <div class="text-muted mb-1">Observações da Requisição</div>
+                            <div>{{ requisicao.observacoes_requisicao }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if requisicao.observacoes_aprovacao %}
+                        <hr>
+                        <div class="mb-3">
+                            <div class="text-muted mb-1">Observações da Aprovação</div>
+                            <div class="alert alert-azure">{{ requisicao.observacoes_aprovacao }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if requisicao.observacoes_devolucao %}
+                        <div class="mb-3">
+                            <div class="text-muted mb-1">Observações da Devolução</div>
+                            <div class="alert alert-secondary">{{ requisicao.observacoes_devolucao }}</div>
+                        </div>
+                        {% endif %}
                     </div>
-                    {% endfor %}
+                </div>
+                
+                <!-- Equipamentos -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="ti ti-camera"></i> Equipamentos Requisitados</h3>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for equipamento in requisicao.equipamentos.all %}
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <div class="text-truncate">
+                                        <strong>{{ equipamento.nome }}</strong>
+                                    </div>
+                                    <div class="text-muted">{{ equipamento.marca }} {{ equipamento.modelo }}</div>
+                                    <small class="text-muted">Código: {{ equipamento.codigo_interno }}</small>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="{% url 'detalhe_equipamento' equipamento.id %}" class="btn btn-sm btn-ghost-primary">
+                                        <i class="ti ti-eye"></i> Ver
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <!-- Ações (apenas para staff) -->
+                {% if user.is_staff %}
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title"><i class="ti ti-settings"></i> Ações (Staff)</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if requisicao.estado == 'pendente' %}
+                        <a href="{% url 'aprovar_requisicao' requisicao.id %}" class="btn btn-success w-100 mb-2">
+                            <i class="ti ti-circle-check"></i> Aprovar/Rejeitar
+                        </a>
+                        {% elif requisicao.estado == 'aprovada' %}
+                        <a href="{% url 'registar_entrega' requisicao.id %}" class="btn btn-primary w-100 mb-2">
+                            <i class="ti ti-arrow-right"></i> Registar Entrega
+                        </a>
+                        {% elif requisicao.estado == 'em_curso' %}
+                        <a href="{% url 'registar_devolucao' requisicao.id %}" class="btn btn-warning w-100 mb-2">
+                            <i class="ti ti-arrow-left"></i> Registar Devolução
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Timeline -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="ti ti-clock"></i> Histórico</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="steps steps-vertical">
+                            <li class="step-item active">
+                                <div class="h4 m-0">Requisição criada</div>
+                                <div class="text-muted">{{ requisicao.data_requisicao|date:"d/m/Y H:i" }}</div>
+                            </li>
+                            
+                            {% if requisicao.data_aprovacao %}
+                            <li class="step-item active">
+                                <div class="h4 m-0">{% if requisicao.estado == 'rejeitada' %}Rejeitada{% else %}Aprovada{% endif %}</div>
+                                <div class="text-muted">{{ requisicao.data_aprovacao|date:"d/m/Y H:i" }}</div>
+                            </li>
+                            {% endif %}
+                            
+                            {% if requisicao.data_entrega_real %}
+                            <li class="step-item active">
+                                <div class="h4 m-0">Equipamento entregue</div>
+                                <div class="text-muted">{{ requisicao.data_entrega_real|date:"d/m/Y H:i" }}</div>
+                            </li>
+                            {% endif %}
+                            
+                            {% if requisicao.data_devolucao_real %}
+                            <li class="step-item active">
+                                <div class="h4 m-0">Equipamento devolvido</div>
+                                <div class="text-muted">{{ requisicao.data_devolucao_real|date:"d/m/Y H:i" }}</div>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-4">
-        <!-- Ações (apenas para staff) -->
-        {% if user.is_staff %}
-        <div class="card mb-3">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="bi bi-gear"></i> Ações (Staff)</h5>
-            </div>
-            <div class="card-body">
-                {% if requisicao.estado == 'pendente' %}
-                <a href="{% url 'aprovar_requisicao' requisicao.id %}" class="btn btn-success w-100 mb-2">
-                    <i class="bi bi-check-circle"></i> Aprovar/Rejeitar
-                </a>
-                {% elif requisicao.estado == 'aprovada' %}
-                <a href="{% url 'registar_entrega' requisicao.id %}" class="btn btn-primary w-100 mb-2">
-                    <i class="bi bi-box-arrow-right"></i> Registar Entrega
-                </a>
-                {% elif requisicao.estado == 'em_curso' %}
-                <a href="{% url 'registar_devolucao' requisicao.id %}" class="btn btn-warning w-100 mb-2">
-                    <i class="bi bi-box-arrow-in-left"></i> Registar Devolução
-                </a>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
-        
-        <!-- Timeline -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Histórico</h5>
-            </div>
-            <div class="card-body">
-                <ul class="list-unstyled">
-                    <li class="mb-3">
-                        <i class="bi bi-circle-fill text-primary"></i>
-                        <strong>Requisição criada</strong><br>
-                        <small class="text-muted">{{ requisicao.data_requisicao|date:"d/m/Y H:i" }}</small>
-                    </li>
-                    
-                    {% if requisicao.data_aprovacao %}
-                    <li class="mb-3">
-                        <i class="bi bi-circle-fill {% if requisicao.estado == 'rejeitada' %}text-danger{% else %}text-success{% endif %}"></i>
-                        <strong>{% if requisicao.estado == 'rejeitada' %}Rejeitada{% else %}Aprovada{% endif %}</strong><br>
-                        <small class="text-muted">{{ requisicao.data_aprovacao|date:"d/m/Y H:i" }}</small>
-                    </li>
-                    {% endif %}
-                    
-                    {% if requisicao.data_entrega_real %}
-                    <li class="mb-3">
-                        <i class="bi bi-circle-fill text-info"></i>
-                        <strong>Equipamento entregue</strong><br>
-                        <small class="text-muted">{{ requisicao.data_entrega_real|date:"d/m/Y H:i" }}</small>
-                    </li>
-                    {% endif %}
-                    
-                    {% if requisicao.data_devolucao_real %}
-                    <li class="mb-3">
-                        <i class="bi bi-circle-fill text-secondary"></i>
-                        <strong>Equipamento devolvido</strong><br>
-                        <small class="text-muted">{{ requisicao.data_devolucao_real|date:"d/m/Y H:i" }}</small>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="mt-4">
-    <a href="{% url 'minhas_requisicoes' %}" class="btn btn-secondary">
-        <i class="bi bi-arrow-left"></i> Voltar
-    </a>
+        <div class="mt-3">
+            <a href="{% url 'minhas_requisicoes' %}" class="btn">
+                <i class="ti ti-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}

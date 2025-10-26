@@ -3,105 +3,149 @@
 {% block title %}Dashboard - {{ block.super }}{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Dashboard</h1>
-
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-camera"></i> Total de Equipamentos</h5>
-                <h2 class="mb-0">{{ total_equipamentos }}</h2>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card bg-success text-white">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-check-circle"></i> Disponíveis</h5>
-                <h2 class="mb-0">{{ equipamentos_disponiveis }}</h2>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card bg-warning text-white">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-box-arrow-right"></i> Emprestados</h5>
-                <h2 class="mb-0">{{ equipamentos_emprestados }}</h2>
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">Dashboard</h2>
             </div>
         </div>
     </div>
 </div>
 
-{% if user.is_staff and requisicoes_atrasadas %}
-<div class="alert alert-danger">
-    <h5><i class="bi bi-exclamation-triangle"></i> Requisições Atrasadas</h5>
-    <p>Existem {{ requisicoes_atrasadas.count }} requisições atrasadas que necessitam atenção.</p>
-    <a href="{% url 'listar_requisicoes_pendentes' %}" class="btn btn-sm btn-danger">Ver Requisições</a>
-</div>
-{% endif %}
-
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-list"></i> Minhas Requisições Recentes</h5>
-                <a href="{% url 'minhas_requisicoes' %}" class="btn btn-sm btn-primary">Ver Todas</a>
-            </div>
-            <div class="card-body">
-                {% if minhas_requisicoes %}
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Data</th>
-                                <th>Período</th>
-                                <th>Equipamentos</th>
-                                <th>Estado</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for req in minhas_requisicoes %}
-                            <tr>
-                                <td>#{{ req.id }}</td>
-                                <td>{{ req.data_requisicao|date:"d/m/Y" }}</td>
-                                <td>{{ req.data_inicio_prevista|date:"d/m" }} - {{ req.data_fim_prevista|date:"d/m" }}</td>
-                                <td>{{ req.equipamentos.count }}</td>
-                                <td>
-                                    <span class="badge bg-{{ req.estado|yesno:'warning,success,danger' }}">
-                                        {{ req.get_estado_display }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="{% url 'detalhe_requisicao' req.id %}" class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-eye"></i> Ver
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-deck row-cards mb-3">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">Total de Equipamentos</div>
+                        </div>
+                        <div class="h1 mb-0">{{ total_equipamentos }}</div>
+                        <div class="text-muted">
+                            <i class="ti ti-camera"></i> Equipamentos no sistema
+                        </div>
+                    </div>
                 </div>
-                {% else %}
-                <p class="text-muted text-center py-4">Ainda não fez nenhuma requisição.</p>
-                <div class="text-center">
-                    <a href="{% url 'criar_requisicao' %}" class="btn btn-primary">
-                        <i class="bi bi-plus-circle"></i> Criar Primeira Requisição
-                    </a>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">Disponíveis</div>
+                        </div>
+                        <div class="h1 mb-0 text-success">{{ equipamentos_disponiveis }}</div>
+                        <div class="text-muted">
+                            <i class="ti ti-circle-check"></i> Prontos para uso
+                        </div>
+                    </div>
                 </div>
-                {% endif %}
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">Emprestados</div>
+                        </div>
+                        <div class="h1 mb-0 text-warning">{{ equipamentos_emprestados }}</div>
+                        <div class="text-muted">
+                            <i class="ti ti-arrow-right"></i> Em utilização
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="mt-4">
-    <a href="{% url 'listar_equipamentos' %}" class="btn btn-lg btn-primary">
-        <i class="bi bi-camera"></i> Ver Equipamentos Disponíveis
-    </a>
-    <a href="{% url 'criar_requisicao' %}" class="btn btn-lg btn-success">
-        <i class="bi bi-plus-circle"></i> Nova Requisição
-    </a>
+        {% if user.is_staff and requisicoes_atrasadas %}
+        <div class="alert alert-danger" role="alert">
+            <div class="d-flex">
+                <div>
+                    <i class="ti ti-alert-triangle"></i>
+                </div>
+                <div>
+                    <h4 class="alert-title">Requisições Atrasadas</h4>
+                    <div class="text-muted">Existem {{ requisicoes_atrasadas.count }} requisições atrasadas que necessitam atenção.</div>
+                    <div class="mt-3">
+                        <a href="{% url 'listar_requisicoes_pendentes' %}" class="btn btn-danger">Ver Requisições</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="ti ti-list"></i> Minhas Requisições Recentes</h3>
+                        <div class="card-actions">
+                            <a href="{% url 'minhas_requisicoes' %}" class="btn btn-primary">Ver Todas</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if minhas_requisicoes %}
+                        <div class="table-responsive">
+                            <table class="table table-vcenter card-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Data</th>
+                                        <th>Período</th>
+                                        <th>Equipamentos</th>
+                                        <th>Estado</th>
+                                        <th class="w-1"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for req in minhas_requisicoes %}
+                                    <tr>
+                                        <td class="text-muted">#{{ req.id }}</td>
+                                        <td>{{ req.data_requisicao|date:"d/m/Y" }}</td>
+                                        <td>{{ req.data_inicio_prevista|date:"d/m" }} - {{ req.data_fim_prevista|date:"d/m" }}</td>
+                                        <td>{{ req.equipamentos.count }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ req.estado|yesno:'warning,success,danger' }}">
+                                                {{ req.get_estado_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'detalhe_requisicao' req.id %}" class="btn btn-sm btn-ghost-primary">
+                                                <i class="ti ti-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="empty">
+                            <div class="empty-icon">
+                                <i class="ti ti-clipboard"></i>
+                            </div>
+                            <p class="empty-title">Ainda não fez nenhuma requisição</p>
+                            <p class="empty-subtitle text-muted">Comece criando a sua primeira requisição de equipamento</p>
+                            <div class="empty-action">
+                                <a href="{% url 'criar_requisicao' %}" class="btn btn-primary">
+                                    <i class="ti ti-plus"></i> Criar Primeira Requisição
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a href="{% url 'listar_equipamentos' %}" class="btn btn-primary">
+                <i class="ti ti-camera"></i> Ver Equipamentos Disponíveis
+            </a>
+            <a href="{% url 'criar_requisicao' %}" class="btn btn-success">
+                <i class="ti ti-plus"></i> Nova Requisição
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}
