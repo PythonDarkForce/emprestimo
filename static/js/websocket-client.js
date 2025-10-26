@@ -246,6 +246,9 @@ class WebSocketManager {
         const tipoTabler = tipoMap[tipo] || 'info';
         notificacao.className = `alert alert-${tipoTabler} alert-dismissible notification-toast`;
         notificacao.setAttribute('role', 'alert');
+        // Add opacity for fade animation
+        notificacao.style.opacity = '1';
+        notificacao.style.transition = 'opacity 0.3s ease';
 
         let conteudo = `
             <div class="d-flex">
@@ -261,7 +264,7 @@ class WebSocketManager {
         }
 
         conteudo += `
-            <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
         `;
 
         notificacao.innerHTML = conteudo;
@@ -319,10 +322,11 @@ class WebSocketManager {
         const bgColor = tipoMap[tipo] || 'blue';
         toast.className = `toast align-items-center text-bg-${bgColor} border-0`;
         toast.setAttribute('role', 'alert');
+        // Use btn-close for better visibility on colored backgrounds
         toast.innerHTML = `
             <div class="d-flex">
                 <div class="toast-body">${mensagem}</div>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
             </div>
         `;
 
