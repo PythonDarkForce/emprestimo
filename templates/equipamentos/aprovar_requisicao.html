@@ -3,114 +3,149 @@
 {% block title %}Aprovar Requisição #{{ requisicao.id }} - {{ block.super }}{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Analisar Requisição #{{ requisicao.id }}</h1>
-
-<div class="row">
-    <div class="col-md-8">
-        <div class="card mb-3">
-            <div class="card-header">
-                <h5 class="mb-0">Informações da Requisição</h5>
-            </div>
-            <div class="card-body">
-                <p><strong>Solicitante:</strong> {{ requisicao.utilizador.get_full_name|default:requisicao.utilizador.username }}</p>
-                <p><strong>Email:</strong> {{ requisicao.utilizador.email }}</p>
-                <p><strong>Data da Requisição:</strong> {{ requisicao.data_requisicao|date:"d/m/Y H:i" }}</p>
-                <p><strong>Período:</strong> {{ requisicao.data_inicio_prevista|date:"d/m/Y" }} até {{ requisicao.data_fim_prevista|date:"d/m/Y" }} ({{ requisicao.duracao_prevista }} dias)</p>
-                
-                <hr>
-                
-                <h6>Motivo:</h6>
-                <p>{{ requisicao.motivo }}</p>
-                
-                {% if requisicao.observacoes_requisicao %}
-                <h6>Observações:</h6>
-                <p>{{ requisicao.observacoes_requisicao }}</p>
-                {% endif %}
-                
-                <hr>
-                
-                <h6>Equipamentos Requisitados:</h6>
-                <ul class="list-group">
-                    {% for equipamento in requisicao.equipamentos.all %}
-                    <li class="list-group-item">
-                        <strong>{{ equipamento.nome }}</strong> - {{ equipamento.marca }} {{ equipamento.modelo }}
-                        <br><small class="text-muted">Código: {{ equipamento.codigo_interno }}</small>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-        
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Decisão</h5>
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Decisão *</label>
-                        {% for radio in form.decisao %}
-                        <div class="form-check">
-                            {{ radio.tag }}
-                            <label class="form-check-label" for="{{ radio.id_for_label }}">
-                                {{ radio.choice_label }}
-                            </label>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="id_observacoes_aprovacao" class="form-label">Observações da Aprovação</label>
-                        {{ form.observacoes_aprovacao }}
-                        <small class="form-text text-muted">
-                            Adicione comentários ou condições (opcional)
-                        </small>
-                    </div>
-                    
-                    {% if form.errors %}
-                    <div class="alert alert-danger">
-                        {{ form.errors }}
-                    </div>
-                    {% endif %}
-                    
-                    <hr>
-                    
-                    <div class="d-flex justify-content-between">
-                        <a href="{% url 'listar_requisicoes_pendentes' %}" class="btn btn-secondary">
-                            <i class="bi bi-x-circle"></i> Cancelar
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-circle"></i> Submeter Decisão
-                        </button>
-                    </div>
-                </form>
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">Analisar Requisição #{{ requisicao.id }}</h2>
             </div>
         </div>
     </div>
-    
-    <div class="col-md-4">
-        <div class="card bg-light">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-info-circle"></i> Orientações</h5>
-                <p class="small">
-                    <strong>Ao aprovar:</strong>
-                </p>
-                <ul class="small">
-                    <li>Verifique a disponibilidade dos equipamentos</li>
-                    <li>Confirme que as datas são adequadas</li>
-                    <li>Os equipamentos serão marcados como emprestados</li>
-                </ul>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-cards">
+            <div class="col-lg-8">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h3 class="card-title">Informações da Requisição</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="datagrid">
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Solicitante</div>
+                                <div class="datagrid-content">{{ requisicao.utilizador.get_full_name|default:requisicao.utilizador.username }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Email</div>
+                                <div class="datagrid-content">{{ requisicao.utilizador.email }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Data da Requisição</div>
+                                <div class="datagrid-content">{{ requisicao.data_requisicao|date:"d/m/Y H:i" }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Período</div>
+                                <div class="datagrid-content">{{ requisicao.data_inicio_prevista|date:"d/m/Y" }} até {{ requisicao.data_fim_prevista|date:"d/m/Y" }} ({{ requisicao.duracao_prevista }} dias)</div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <h4>Motivo:</h4>
+                        <p>{{ requisicao.motivo }}</p>
+                        
+                        {% if requisicao.observacoes_requisicao %}
+                        <h4>Observações:</h4>
+                        <p>{{ requisicao.observacoes_requisicao }}</p>
+                        {% endif %}
+                        
+                        <hr>
+                        
+                        <h4>Equipamentos Requisitados:</h4>
+                        <div class="list-group list-group-flush">
+                            {% for equipamento in requisicao.equipamentos.all %}
+                            <div class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="13" r="3" /><path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h2m9 7v7a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" /></svg>
+                                    </div>
+                                    <div class="col">
+                                        <div class="text-truncate">
+                                            <strong>{{ equipamento.nome }}</strong> - {{ equipamento.marca }} {{ equipamento.modelo }}
+                                        </div>
+                                        <div class="text-muted"><small>Código: {{ equipamento.codigo_interno }}</small></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
                 
-                <p class="small mt-3">
-                    <strong>Ao rejeitar:</strong>
-                </p>
-                <ul class="small">
-                    <li>Explique o motivo da rejeição</li>
-                    <li>Sugira alternativas se possível</li>
-                    <li>O utilizador será notificado</li>
-                </ul>
+                <div class="card">
+                    <div class="card-header bg-blue-lt">
+                        <h3 class="card-title">Decisão</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label class="form-label required">Decisão</label>
+                                <div>
+                                    {% for radio in form.decisao %}
+                                    <label class="form-check">
+                                        {{ radio.tag }}
+                                        <span class="form-check-label">{{ radio.choice_label }}</span>
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_observacoes_aprovacao" class="form-label">Observações da Aprovação</label>
+                                {{ form.observacoes_aprovacao }}
+                                <small class="form-hint">
+                                    Adicione comentários ou condições (opcional)
+                                </small>
+                            </div>
+                            
+                            {% if form.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.errors }}
+                            </div>
+                            {% endif %}
+                            
+                            <hr>
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'listar_requisicoes_pendentes' %}" class="btn">
+                                    Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                                    Submeter Decisão
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="9" /><line x1="12" y1="8" x2="12.01" y2="8" /><polyline points="11 12 12 12 12 16 13 16" /></svg>
+                            Orientações
+                        </h3>
+                        <p class="text-muted"><strong>Ao aprovar:</strong></p>
+                        <ul class="mb-3">
+                            <li>Verifique a disponibilidade dos equipamentos</li>
+                            <li>Confirme que as datas são adequadas</li>
+                            <li>Os equipamentos serão marcados como emprestados</li>
+                        </ul>
+                        
+                        <p class="text-muted"><strong>Ao rejeitar:</strong></p>
+                        <ul class="mb-0">
+                            <li>Explique o motivo da rejeição</li>
+                            <li>Sugira alternativas se possível</li>
+                            <li>O utilizador será notificado</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
