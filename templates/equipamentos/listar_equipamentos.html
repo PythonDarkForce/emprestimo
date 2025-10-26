@@ -3,86 +3,104 @@
 {% block title %}Equipamentos - {{ block.super }}{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1><i class="bi bi-camera"></i> Equipamentos</h1>
-</div>
-
-<!-- Filtros -->
-<div class="card mb-4">
-    <div class="card-body">
-        <form method="get" class="row g-3">
-            <div class="col-md-3">
-                <label class="form-label">Categoria</label>
-                <select name="categoria" class="form-select">
-                    <option value="">Todas as categorias</option>
-                    {% for cat in categorias %}
-                    <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == categoria_selecionada %}selected{% endif %}>
-                        {{ cat.nome }}
-                    </option>
-                    {% endfor %}
-                </select>
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="13" r="3" /><path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h2m9 7v7a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" /></svg>
+                    Equipamentos
+                </h2>
             </div>
-            <div class="col-md-3">
-                <label class="form-label">Estado</label>
-                <select name="estado" class="form-select">
-                    <option value="">Todos os estados</option>
-                    <option value="disponivel" {% if estado_selecionado == 'disponivel' %}selected{% endif %}>Disponível</option>
-                    <option value="emprestado" {% if estado_selecionado == 'emprestado' %}selected{% endif %}>Emprestado</option>
-                    <option value="manutencao" {% if estado_selecionado == 'manutencao' %}selected{% endif %}>Em Manutenção</option>
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Buscar</label>
-                <input type="text" name="busca" class="form-control" placeholder="Nome, marca, modelo..." value="{{ busca }}">
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-search"></i> Filtrar
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<!-- Lista de Equipamentos -->
-<div class="row">
-    {% for equipamento in equipamentos %}
-    <div class="col-md-4 mb-4">
-        <div class="card card-equipamento h-100">
-            {% if equipamento.imagem %}
-            <img src="{{ equipamento.imagem.url }}" class="card-img-top" alt="{{ equipamento.nome }}" style="height: 200px; object-fit: cover;">
-            {% else %}
-            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                <i class="bi bi-camera" style="font-size: 4rem; color: #ccc;"></i>
-            </div>
-            {% endif %}
+<div class="page-body">
+    <div class="container-xl">
+        <!-- Filtros -->
+        <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">{{ equipamento.nome }}</h5>
-                <p class="card-text text-muted mb-2">
-                    <small>{{ equipamento.marca }} {{ equipamento.modelo }}</small><br>
-                    <small><strong>Código:</strong> {{ equipamento.codigo_interno }}</small>
-                </p>
-                <span class="badge 
-                    {% if equipamento.estado == 'disponivel' %}bg-success
-                    {% elif equipamento.estado == 'emprestado' %}bg-warning
-                    {% elif equipamento.estado == 'manutencao' %}bg-danger
-                    {% else %}bg-secondary{% endif %}">
-                    {{ equipamento.get_estado_display }}
-                </span>
-            </div>
-            <div class="card-footer bg-transparent">
-                <a href="{% url 'detalhe_equipamento' equipamento.id %}" class="btn btn-sm btn-outline-primary w-100">
-                    <i class="bi bi-eye"></i> Ver Detalhes
-                </a>
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Categoria</label>
+                        <select name="categoria" class="form-select">
+                            <option value="">Todas as categorias</option>
+                            {% for cat in categorias %}
+                            <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == categoria_selecionada %}selected{% endif %}>
+                                {{ cat.nome }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Estado</label>
+                        <select name="estado" class="form-select">
+                            <option value="">Todos os estados</option>
+                            <option value="disponivel" {% if estado_selecionado == 'disponivel' %}selected{% endif %}>Disponível</option>
+                            <option value="emprestado" {% if estado_selecionado == 'emprestado' %}selected{% endif %}>Emprestado</option>
+                            <option value="manutencao" {% if estado_selecionado == 'manutencao' %}selected{% endif %}>Em Manutenção</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Buscar</label>
+                        <input type="text" name="busca" class="form-control" placeholder="Nome, marca, modelo..." value="{{ busca }}">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="10" cy="10" r="7" /><line x1="21" y1="21" x2="15" y2="15" /></svg>
+                            Filtrar
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
-    {% empty %}
-    <div class="col-12">
-        <div class="alert alert-info text-center">
-            <i class="bi bi-info-circle"></i> Nenhum equipamento encontrado com os filtros selecionados.
+
+        <!-- Lista de Equipamentos -->
+        <div class="row row-cards">
+            {% for equipamento in equipamentos %}
+            <div class="col-sm-6 col-lg-4">
+                <div class="card card-sm card-equipamento">
+                    {% if equipamento.imagem %}
+                    <a href="{% url 'detalhe_equipamento' equipamento.id %}" class="d-block">
+                        <img src="{{ equipamento.imagem.url }}" class="card-img-top" alt="{{ equipamento.nome }}" style="height: 200px; object-fit: cover;">
+                    </a>
+                    {% else %}
+                    <a href="{% url 'detalhe_equipamento' equipamento.id %}" class="d-block">
+                        <div class="card-img-top placeholder-glow" style="height: 200px; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler" width="64" height="64" viewBox="0 0 24 24" stroke-width="1" stroke="#dee2e6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="13" r="3" /><path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h2m9 7v7a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" /></svg>
+                        </div>
+                    </a>
+                    {% endif %}
+                    <div class="card-body">
+                        <h3 class="card-title"><a href="{% url 'detalhe_equipamento' equipamento.id %}">{{ equipamento.nome }}</a></h3>
+                        <div class="text-muted">{{ equipamento.marca }} {{ equipamento.modelo }}</div>
+                        <div class="text-muted"><small><strong>Código:</strong> {{ equipamento.codigo_interno }}</small></div>
+                        <div class="mt-2">
+                            <span class="badge bg-{% if equipamento.estado == 'disponivel' %}green{% elif equipamento.estado == 'emprestado' %}yellow{% elif equipamento.estado == 'manutencao' %}red{% else %}secondary{% endif %}">
+                                {{ equipamento.get_estado_display }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{% url 'detalhe_equipamento' equipamento.id %}" class="btn btn-primary w-100">Ver Detalhes</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="empty">
+                    <div class="empty-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="10" cy="10" r="7" /><line x1="21" y1="21" x2="15" y2="15" /></svg>
+                    </div>
+                    <p class="empty-title">Nenhum equipamento encontrado</p>
+                    <p class="empty-subtitle text-muted">
+                        Nenhum equipamento encontrado com os filtros selecionados.
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
-    {% endfor %}
 </div>
 {% endblock %}
