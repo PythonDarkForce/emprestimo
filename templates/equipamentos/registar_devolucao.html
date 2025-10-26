@@ -3,106 +3,150 @@
 {% block title %}Registar Devolução - {{ block.super }}{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Registar Devolução - Requisição #{{ requisicao.id }}</h1>
-
-<div class="row">
-    <div class="col-md-8">
-        <div class="card mb-3">
-            <div class="card-header">
-                <h5 class="mb-0">Informações da Requisição</h5>
-            </div>
-            <div class="card-body">
-                <p><strong>Utilizador:</strong> {{ requisicao.utilizador.get_full_name|default:requisicao.utilizador.username }}</p>
-                <p><strong>Data Prevista de Devolução:</strong> {{ requisicao.data_fim_prevista|date:"d/m/Y" }}</p>
-                
-                {% if requisicao.esta_atrasada %}
-                <div class="alert alert-warning">
-                    <i class="bi bi-exclamation-triangle"></i> 
-                    <strong>Atenção:</strong> Esta devolução está atrasada!
-                </div>
-                {% endif %}
-                
-                <hr>
-                
-                <h6>Equipamentos a Devolver:</h6>
-                <ul class="list-group">
-                    {% for equipamento in requisicao.equipamentos.all %}
-                    <li class="list-group-item">
-                        <strong>{{ equipamento.nome }}</strong> - {{ equipamento.codigo_interno }}
-                        <br><small class="text-muted">{{ equipamento.marca }} {{ equipamento.modelo }}</small>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-        
-        <div class="card">
-            <div class="card-header bg-warning">
-                <h5 class="mb-0">Registar Devolução</h5>
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> 
-                        Verifique o estado de todos os equipamentos antes de finalizar a devolução.
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="id_observacoes_devolucao" class="form-label">Observações sobre o Estado dos Equipamentos</label>
-                        {{ form.observacoes_devolucao }}
-                        <small class="form-text text-muted">
-                            Registe o estado dos equipamentos, eventuais danos, ou outras observações relevantes
-                        </small>
-                    </div>
-                    
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="confirmarEstado" required>
-                        <label class="form-check-label" for="confirmarEstado">
-                            Confirmo que verifiquei o estado de todos os equipamentos
-                        </label>
-                    </div>
-                    
-                    {% if form.errors %}
-                    <div class="alert alert-danger">
-                        {{ form.errors }}
-                    </div>
-                    {% endif %}
-                    
-                    <hr>
-                    
-                    <div class="d-flex justify-content-between">
-                        <a href="{% url 'detalhe_requisicao' requisicao.id %}" class="btn btn-secondary">
-                            <i class="bi bi-x-circle"></i> Cancelar
-                        </a>
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-check-circle"></i> Confirmar Devolução
-                        </button>
-                    </div>
-                </form>
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">Registar Devolução - Requisição #{{ requisicao.id }}</h2>
             </div>
         </div>
     </div>
-    
-    <div class="col-md-4">
-        <div class="card bg-light">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-clipboard-check"></i> Checklist de Devolução</h5>
-                <ul class="small">
-                    <li>Verificar integridade física de cada equipamento</li>
-                    <li>Confirmar presença de todos os acessórios</li>
-                    <li>Limpar equipamento se necessário</li>
-                    <li>Testar funcionamento básico</li>
-                    <li>Registar qualquer dano ou anomalia</li>
-                    <li>Arquivar os equipamentos corretamente</li>
-                </ul>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-cards">
+            <div class="col-lg-8">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h3 class="card-title">Informações da Requisição</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="datagrid">
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Utilizador</div>
+                                <div class="datagrid-content">{{ requisicao.utilizador.get_full_name|default:requisicao.utilizador.username }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Data Prevista de Devolução</div>
+                                <div class="datagrid-content">{{ requisicao.data_fim_prevista|date:"d/m/Y" }}</div>
+                            </div>
+                        </div>
+                        
+                        {% if requisicao.esta_atrasada %}
+                        <div class="alert alert-warning mt-3" role="alert">
+                            <div class="d-flex">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 9v2m0 4v.01" /><path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" /></svg>
+                                </div>
+                                <div>
+                                    <h4 class="alert-title">Atenção</h4>
+                                    <div class="text-muted">Esta devolução está atrasada!</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <hr>
+                        
+                        <h4>Equipamentos a Devolver:</h4>
+                        <div class="list-group list-group-flush">
+                            {% for equipamento in requisicao.equipamentos.all %}
+                            <div class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="13" r="3" /><path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h2m9 7v7a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" /></svg>
+                                    </div>
+                                    <div class="col">
+                                        <strong>{{ equipamento.nome }}</strong> - {{ equipamento.codigo_interno }}<br>
+                                        <small class="text-muted">{{ equipamento.marca }} {{ equipamento.modelo }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
                 
-                <hr>
-                
-                <p class="small text-muted mb-0">
-                    Após confirmar a devolução, os equipamentos ficarão novamente disponíveis para requisição.
-                </p>
+                <div class="card">
+                    <div class="card-header bg-yellow-lt">
+                        <h3 class="card-title">Registar Devolução</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="alert alert-info" role="alert">
+                                <div class="d-flex">
+                                    <div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="9" /><line x1="12" y1="8" x2="12.01" y2="8" /><polyline points="11 12 12 12 12 16 13 16" /></svg>
+                                    </div>
+                                    <div>
+                                        Verifique o estado de todos os equipamentos antes de finalizar a devolução.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_observacoes_devolucao" class="form-label">Observações sobre o Estado dos Equipamentos</label>
+                                {{ form.observacoes_devolucao }}
+                                <small class="form-hint">
+                                    Registe o estado dos equipamentos, eventuais danos, ou outras observações relevantes
+                                </small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="confirmarEstado" required>
+                                    <span class="form-check-label">Confirmo que verifiquei o estado de todos os equipamentos</span>
+                                </label>
+                            </div>
+                            
+                            {% if form.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.errors }}
+                            </div>
+                            {% endif %}
+                            
+                            <hr>
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'detalhe_requisicao' requisicao.id %}" class="btn">
+                                    Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                                    Confirmar Devolução
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" /><rect x="9" y="3" width="6" height="4" rx="2" /><path d="M9 14l2 2l4 -4" /></svg>
+                            Checklist de Devolução
+                        </h3>
+                        <ul class="mb-3">
+                            <li>Verificar integridade física de cada equipamento</li>
+                            <li>Confirmar presença de todos os acessórios</li>
+                            <li>Limpar equipamento se necessário</li>
+                            <li>Testar funcionamento básico</li>
+                            <li>Registar qualquer dano ou anomalia</li>
+                            <li>Arquivar os equipamentos corretamente</li>
+                        </ul>
+                        
+                        <hr>
+                        
+                        <p class="text-muted mb-0">
+                            Após confirmar a devolução, os equipamentos ficarão novamente disponíveis para requisição.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
