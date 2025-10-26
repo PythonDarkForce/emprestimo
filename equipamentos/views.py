@@ -266,6 +266,8 @@ def api_contadores(request):
 @require_http_methods(["GET"])
 def api_cronograma_equipamento(request, pk):
     """API para obter cronograma de empréstimos de um equipamento"""
+    MOTIVO_MAX_LENGTH = 100
+    
     equipamento = get_object_or_404(Equipamento, pk=pk)
     
     # Buscar todas as requisições do equipamento (aprovadas, em curso ou concluídas)
@@ -283,7 +285,7 @@ def api_cronograma_equipamento(request, pk):
             'utilizador': req.utilizador.get_full_name() or req.utilizador.username,
             'estado': req.estado,
             'estado_display': req.get_estado_display(),
-            'motivo': req.motivo[:100] if len(req.motivo) > 100 else req.motivo,
+            'motivo': req.motivo[:MOTIVO_MAX_LENGTH] if len(req.motivo) > MOTIVO_MAX_LENGTH else req.motivo,
         }
         eventos.append(evento)
     

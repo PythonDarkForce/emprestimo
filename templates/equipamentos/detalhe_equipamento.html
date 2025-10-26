@@ -303,7 +303,7 @@
     // Carregar eventos do servidor
     async function loadEventos() {
         try {
-            const response = await fetch(`/api/equipamentos/${equipamentoId}/cronograma/`);
+            const response = await fetch(`/api/equipamentos/${encodeURIComponent(equipamentoId)}/cronograma/`);
             const data = await response.json();
             eventosData = data.eventos.map(evento => ({
                 ...evento,
@@ -361,7 +361,7 @@
 
         // Adicionar dias do próximo mês para completar a grade
         const totalCells = calendarDiv.children.length - 7; // Subtrair os headers
-        const remainingCells = (Math.ceil(totalCells / 7) * 7) - totalCells;
+        const remainingCells = totalCells % 7 === 0 ? 0 : (7 - (totalCells % 7));
         for (let day = 1; day <= remainingCells; day++) {
             const dayDiv = createDayElement(day, month + 1, year, true);
             calendarDiv.appendChild(dayDiv);
@@ -396,8 +396,9 @@
             eventsForDay.forEach(evento => {
                 const eventDiv = document.createElement('div');
                 eventDiv.className = `calendar-event ${evento.estado}`;
-                eventDiv.textContent = evento.utilizador.split(' ')[0]; // Primeiro nome
-                eventDiv.title = `${evento.utilizador} - ${evento.motivo}`;
+                const userName = evento.utilizador || 'Desconhecido';
+                eventDiv.textContent = userName.split(' ')[0]; // Primeiro nome
+                eventDiv.title = `${userName} - ${evento.motivo}`;
                 dayDiv.appendChild(eventDiv);
             });
         }
@@ -409,8 +410,8 @@
     function getEventsForDay(day, month, year) {
         const date = new Date(year, month, day);
         return eventosData.filter(evento => {
-            const eventoStart = new Date(evento.start);
-            const eventoEnd = new Date(evento.end);
+            const eventoStart = new Date(evento.start.getTime());
+            const eventoEnd = new Date(evento.end.getTime());
             eventoStart.setHours(0, 0, 0, 0);
             eventoEnd.setHours(23, 59, 59, 999);
             date.setHours(12, 0, 0, 0);
