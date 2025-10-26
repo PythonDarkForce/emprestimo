@@ -5,8 +5,13 @@ from django.db.models import Q, Count
 from django.utils import timezone
 from django.http import HttpResponseForbidden, JsonResponse
 from django.views.decorators.http import require_http_methods
+import json
+import logging
 from .models import Equipamento, Requisicao, CategoriaEquipamento, HistoricoManutencao
 from .forms import RequisicaoForm, AprovarRequisicaoForm, DevolucaoForm, EquipamentoForm
+from .services import processar_devolucao
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -260,6 +265,58 @@ def api_contadores(request):
     ).count()
 
     return JsonResponse(contadores)
+
+
+@user_passes_test(lambda u: u.is_staff)
+@require_http_methods(["POST"])
+def api_processar_devolucao(request, pk):
+    """API endpoint to process equipment return"""
+    try:
+        # Parse request body if present
+        observacao = None
+        estado_item = None
+        
+        if request.body:
+            try:
+                data = json.loads(request.body)
+                observacao = data.get('observacao')
+                estado_item = data.get('estado_item')
+            except json.JSONDecodeError:
+                pass
+        
+        # Process return
+        resultado = processar_devolucao(
+            emprestimo_id=pk,
+            observacao=observacao,
+            estado_item=estado_item,
+            operador=request.user
+        )
+        
+        # Prepare response
+        response_data = {
+            'success': resultado['devolucao_efetivada'],
+            'message': resultado['mensagem'],
+        }
+        
+        if resultado['emprestimo']:
+            response_data['emprestimo'] = {
+                'id': resultado['emprestimo'].id,
+                'estado': resultado['emprestimo'].estado,
+                'data_devolucao_real': resultado['emprestimo'].data_devolucao_real.isoformat() if resultado['emprestimo'].data_devolucao_real else None,
+            }
+        
+        status_code = 200 if resultado['devolucao_efetivada'] else 400
+        return JsonResponse(response_data, status=status_code)
+        
+    except Exception:
+        # Log the exception for debugging but don't expose details to users
+        logger.exception('Error processing return for loan %s', pk)
+        
+        return JsonResponse({
+            'success': False,
+            'message': 'Erro ao processar devolução. Por favor, tente novamente ou contacte o suporte.'
+        }, status=500)
+
 
 
 """
