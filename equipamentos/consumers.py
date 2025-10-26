@@ -211,6 +211,42 @@ class EquipamentosConsumer(AsyncWebsocketConsumer):
         }))
 
 
+class EmprestimosConsumer(AsyncWebsocketConsumer):
+    """Consumer para atualizações de empréstimos em tempo real"""
+
+    async def connect(self):
+        self.user = self.scope["user"]
+
+        if self.user.is_anonymous:
+            await self.close()
+            return
+
+        self.room_group_name = 'emprestimos'
+
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    async def emprestimo_update(self, event):
+        """Enviar atualização de empréstimo"""
+        await self.send(text_data=json.dumps({
+            'type': event.get('type', 'emprestimo.updated'),
+            'id': event.get('id'),
+            'status': event.get('status'),
+            'data_devolucao': event.get('data_devolucao'),
+            'item_ids': event.get('item_ids', [])
+        }))
+
+
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.requisicao_id = self.scope['url_route']['kwargs']['requisicao_id']

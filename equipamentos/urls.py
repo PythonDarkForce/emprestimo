@@ -25,4 +25,5 @@ urlpatterns = [
     
     # API
     path('api/contadores/', views.api_contadores, name='api_contadores'),
+    path('api/emprestimos/<int:pk>/devolver/', views.api_processar_devolucao, name='api_processar_devolucao'),
 ]
