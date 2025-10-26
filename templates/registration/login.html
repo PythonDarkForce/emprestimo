@@ -4,32 +4,32 @@
 
 {% block content %}
 <div class="page page-center">
-    <div class="container container-tight py-4">
+    <div class="container-tight py-4">
+        <div class="text-center mb-4">
+            <a href="{% url 'dashboard' %}" class="navbar-brand navbar-brand-autodark">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-video" width="36" height="36" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"></path>
+                    <rect x="3" y="6" width="12" height="12" rx="2"></rect>
+                </svg>
+            </a>
+        </div>
         <div class="card card-md">
             <div class="card-body">
-                <h2 class="h2 text-center mb-4">
-                    <i class="ti ti-video"></i> Login
-                </h2>
+                <h2 class="card-title text-center mb-4">Login na sua conta</h2>
                 <form method="post" autocomplete="off">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label class="form-label">Username</label>
-                        <input type="text" name="username" class="form-control" id="id_username" required autofocus>
+                        <input type="text" name="username" class="form-control" id="id_username" placeholder="Introduza o username" required autofocus>
                     </div>
                     <div class="mb-2">
                         <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" id="id_password" required>
+                        <input type="password" name="password" class="form-control" id="id_password" placeholder="Password" required>
                     </div>
                     {% if form.errors %}
                     <div class="alert alert-danger" role="alert">
-                        <div class="d-flex">
-                            <div>
-                                <i class="ti ti-alert-circle"></i>
-                            </div>
-                            <div>
-                                Username ou password incorretos.
-                            </div>
-                        </div>
+                        Username ou password incorretos.
                     </div>
                     {% endif %}
                     <div class="form-footer">

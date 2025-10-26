@@ -7,11 +7,15 @@
     <div class="container-xl">
         <div class="row g-2 align-items-center">
             <div class="col">
-                <h2 class="page-title"><i class="ti ti-chart-bar"></i> Relatório de Utilização de Equipamentos</h2>
+                <h2 class="page-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="4" y1="19" x2="20" y2="19" /><polyline points="4 15 8 9 12 11 16 6 20 10" /></svg>
+                    Relatório de Utilização de Equipamentos
+                </h2>
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <button onclick="window.print()" class="btn">
-                    <i class="ti ti-printer"></i> Imprimir
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2" /><path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4" /><rect x="7" y="13" width="10" height="8" rx="2" /></svg>
+                    Imprimir
                 </button>
             </div>
         </div>
@@ -20,71 +24,66 @@
 
 <div class="page-body">
     <div class="container-xl">
-        <div class="row row-cards mb-3">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Equipamentos por Número de Requisições</h3>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-vcenter card-table">
-                            <thead>
-                                <tr>
-                                    <th>Posição</th>
-                                    <th>Código</th>
-                                    <th>Equipamento</th>
-                                    <th>Categoria</th>
-                                    <th>Estado Atual</th>
-                                    <th>Nº de Requisições</th>
-                                    <th>Valor</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for equipamento in equipamentos %}
-                                <tr>
-                                    <td class="text-muted"><strong>{{ forloop.counter }}º</strong></td>
-                                    <td>{{ equipamento.codigo_interno }}</td>
-                                    <td>
-                                        <a href="{% url 'detalhe_equipamento' equipamento.id %}">
-                                            {{ equipamento.nome }}
-                                        </a>
-                                        <div class="text-muted">{{ equipamento.marca }} {{ equipamento.modelo }}</div>
-                                    </td>
-                                    <td>{{ equipamento.categoria.nome }}</td>
-                                    <td>
-                                        <span class="badge 
-                                            {% if equipamento.estado == 'disponivel' %}bg-success
-                                            {% elif equipamento.estado == 'emprestado' %}bg-warning
-                                            {% elif equipamento.estado == 'manutencao' %}bg-danger
-                                            {% else %}bg-secondary{% endif %}">
-                                            {{ equipamento.get_estado_display }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-primary">{{ equipamento.num_requisicoes }}</span>
-                                    </td>
-                                    <td>{{ equipamento.valor_estimado }}€</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3 class="card-title">Equipamentos por Número de Requisições</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-vcenter card-table">
+                    <thead>
+                        <tr>
+                            <th>Posição</th>
+                            <th>Código</th>
+                            <th>Equipamento</th>
+                            <th>Categoria</th>
+                            <th>Estado Atual</th>
+                            <th>Nº de Requisições</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for equipamento in equipamentos %}
+                        <tr>
+                            <td class="text-muted"><strong>{{ forloop.counter }}º</strong></td>
+                            <td>{{ equipamento.codigo_interno }}</td>
+                            <td>
+                                <a href="{% url 'detalhe_equipamento' equipamento.id %}">
+                                    {{ equipamento.nome }}
+                                </a>
+                                <div class="text-muted"><small>{{ equipamento.marca }} {{ equipamento.modelo }}</small></div>
+                            </td>
+                            <td>{{ equipamento.categoria.nome }}</td>
+                            <td>
+                                <span class="badge bg-{% if equipamento.estado == 'disponivel' %}green{% elif equipamento.estado == 'emprestado' %}yellow{% elif equipamento.estado == 'manutencao' %}red{% else %}secondary{% endif %}">
+                                    {{ equipamento.get_estado_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-blue">{{ equipamento.num_requisicoes }}</span>
+                            </td>
+                            <td>{{ equipamento.valor_estimado }}€</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <div class="row row-cards">
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header bg-success-lt">
-                        <h3 class="card-title"><i class="ti ti-trophy"></i> Top 5 Mais Requisitados</h3>
+                    <div class="card-header bg-green-lt">
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6l4 6l5 -4l-2 10h-14l-2 -10l5 4z" /></svg>
+                            Top 5 Mais Requisitados
+                        </h3>
                     </div>
                     <div class="card-body">
                         <ol class="mb-0">
                             {% for equipamento in equipamentos|slice:":5" %}
                             <li class="mb-2">
                                 <strong>{{ equipamento.nome }}</strong> 
-                                <span class="badge bg-primary ms-2">{{ equipamento.num_requisicoes }} requisições</span>
+                                <span class="badge bg-blue ms-2">{{ equipamento.num_requisicoes }} requisições</span>
                             </li>
                             {% endfor %}
                         </ol>
@@ -94,11 +93,14 @@
             
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header bg-warning-lt">
-                        <h3 class="card-title"><i class="ti ti-alert-triangle"></i> Menos Utilizados</h3>
+                    <div class="card-header bg-yellow-lt">
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 9v2m0 4v.01" /><path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" /></svg>
+                            Menos Utilizados
+                        </h3>
                     </div>
                     <div class="card-body">
-                        <ol class="mb-0">
+                        <ol class="mb-3">
                             {% for equipamento in equipamentos|slice:"-5:" reversed %}
                             <li class="mb-2">
                                 <strong>{{ equipamento.nome }}</strong> 
@@ -106,17 +108,18 @@
                             </li>
                             {% endfor %}
                         </ol>
-                        <div class="text-muted mt-3">
-                            Considere avaliar se estes equipamentos são ainda necessários ou se necessitam de mais divulgação.
+                        <div class="text-muted">
+                            <small>Considere avaliar se estes equipamentos são ainda necessários ou se necessitam de mais divulgação.</small>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="mt-3 d-print-none">
+        <div class="mt-4">
             <a href="{% url 'dashboard' %}" class="btn">
-                <i class="ti ti-arrow-left"></i> Voltar ao Dashboard
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="5" y1="12" x2="19" y2="12" /><line x1="5" y1="12" x2="11" y2="18" /><line x1="5" y1="12" x2="11" y2="6" /></svg>
+                Voltar ao Dashboard
             </a>
         </div>
     </div>
@@ -127,13 +130,13 @@
 <script>
     // Remover elementos desnecessários na impressão
     window.onbeforeprint = function() {
-        document.querySelectorAll('.d-print-none').forEach(el => {
+        document.querySelectorAll('.btn, nav, footer, .page-header .col-auto').forEach(el => {
             el.style.display = 'none';
         });
     };
     
     window.onafterprint = function() {
-        document.querySelectorAll('.d-print-none').forEach(el => {
+        document.querySelectorAll('.btn, nav, footer, .page-header .col-auto').forEach(el => {
             el.style.display = '';
         });
     };

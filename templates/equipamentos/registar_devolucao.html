@@ -22,20 +22,22 @@
                         <h3 class="card-title">Informações da Requisição</h3>
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
-                            <div class="text-muted">Utilizador</div>
-                            <div><strong>{{ requisicao.utilizador.get_full_name|default:requisicao.utilizador.username }}</strong></div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="text-muted">Data Prevista de Devolução</div>
-                            <div>{{ requisicao.data_fim_prevista|date:"d/m/Y" }}</div>
+                        <div class="datagrid">
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Utilizador</div>
+                                <div class="datagrid-content">{{ requisicao.utilizador.get_full_name|default:requisicao.utilizador.username }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Data Prevista de Devolução</div>
+                                <div class="datagrid-content">{{ requisicao.data_fim_prevista|date:"d/m/Y" }}</div>
+                            </div>
                         </div>
                         
                         {% if requisicao.esta_atrasada %}
-                        <div class="alert alert-warning" role="alert">
+                        <div class="alert alert-warning mt-3" role="alert">
                             <div class="d-flex">
                                 <div>
-                                    <i class="ti ti-alert-triangle"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 9v2m0 4v.01" /><path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" /></svg>
                                 </div>
                                 <div>
                                     <h4 class="alert-title">Atenção</h4>
@@ -47,32 +49,37 @@
                         
                         <hr>
                         
-                        <div class="mb-3">
-                            <div class="text-muted mb-2">Equipamentos a Devolver</div>
-                            <div class="list-group">
-                                {% for equipamento in requisicao.equipamentos.all %}
-                                <div class="list-group-item">
-                                    <strong>{{ equipamento.nome }}</strong> - {{ equipamento.codigo_interno }}
-                                    <br><span class="text-muted">{{ equipamento.marca }} {{ equipamento.modelo }}</span>
+                        <h4>Equipamentos a Devolver:</h4>
+                        <div class="list-group list-group-flush">
+                            {% for equipamento in requisicao.equipamentos.all %}
+                            <div class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="13" r="3" /><path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h2m9 7v7a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" /></svg>
+                                    </div>
+                                    <div class="col">
+                                        <strong>{{ equipamento.nome }}</strong> - {{ equipamento.codigo_interno }}<br>
+                                        <small class="text-muted">{{ equipamento.marca }} {{ equipamento.modelo }}</small>
+                                    </div>
                                 </div>
-                                {% endfor %}
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
                 
                 <div class="card">
-                    <div class="card-header bg-warning">
+                    <div class="card-header bg-yellow-lt">
                         <h3 class="card-title">Registar Devolução</h3>
                     </div>
                     <div class="card-body">
                         <form method="post">
                             {% csrf_token %}
                             
-                            <div class="alert alert-azure" role="alert">
+                            <div class="alert alert-info" role="alert">
                                 <div class="d-flex">
                                     <div>
-                                        <i class="ti ti-info-circle"></i>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="9" /><line x1="12" y1="8" x2="12.01" y2="8" /><polyline points="11 12 12 12 12 16 13 16" /></svg>
                                     </div>
                                     <div>
                                         Verifique o estado de todos os equipamentos antes de finalizar a devolução.
@@ -88,35 +95,29 @@
                                 </small>
                             </div>
                             
-                            <label class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="confirmarEstado" required>
-                                <span class="form-check-label">
-                                    Confirmo que verifiquei o estado de todos os equipamentos
-                                </span>
-                            </label>
+                            <div class="mb-3">
+                                <label class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="confirmarEstado" required>
+                                    <span class="form-check-label">Confirmo que verifiquei o estado de todos os equipamentos</span>
+                                </label>
+                            </div>
                             
                             {% if form.errors %}
                             <div class="alert alert-danger" role="alert">
-                                <div class="d-flex">
-                                    <div>
-                                        <i class="ti ti-alert-circle"></i>
-                                    </div>
-                                    <div>
-                                        {{ form.errors }}
-                                    </div>
-                                </div>
+                                {{ form.errors }}
                             </div>
                             {% endif %}
                             
-                            <div class="card-footer bg-transparent mt-auto">
-                                <div class="btn-list justify-content-between">
-                                    <a href="{% url 'detalhe_requisicao' requisicao.id %}" class="btn">
-                                        <i class="ti ti-x"></i> Cancelar
-                                    </a>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="ti ti-check"></i> Confirmar Devolução
-                                    </button>
-                                </div>
+                            <hr>
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'detalhe_requisicao' requisicao.id %}" class="btn">
+                                    Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                                    Confirmar Devolução
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -126,7 +127,10 @@
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-body">
-                        <h3 class="card-title"><i class="ti ti-clipboard-check"></i> Checklist de Devolução</h3>
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" /><rect x="9" y="3" width="6" height="4" rx="2" /><path d="M9 14l2 2l4 -4" /></svg>
+                            Checklist de Devolução
+                        </h3>
                         <ul class="mb-3">
                             <li>Verificar integridade física de cada equipamento</li>
                             <li>Confirmar presença de todos os acessórios</li>

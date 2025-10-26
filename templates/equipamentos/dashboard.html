@@ -15,42 +15,43 @@
 
 <div class="page-body">
     <div class="container-xl">
-        <div class="row row-deck row-cards mb-3">
-            <div class="col-md-4">
+        <div class="row row-cards mb-3">
+            <div class="col-sm-6 col-lg-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="subheader">Total de Equipamentos</div>
                         </div>
                         <div class="h1 mb-0">{{ total_equipamentos }}</div>
-                        <div class="text-muted">
-                            <i class="ti ti-camera"></i> Equipamentos no sistema
-                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-sm-6 col-lg-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="subheader">Disponíveis</div>
                         </div>
-                        <div class="h1 mb-0 text-success">{{ equipamentos_disponiveis }}</div>
-                        <div class="text-muted">
-                            <i class="ti ti-circle-check"></i> Prontos para uso
+                        <div class="d-flex align-items-baseline">
+                            <div class="h1 mb-0 me-2">{{ equipamentos_disponiveis }}</div>
+                            <div class="me-auto">
+                                <span class="badge bg-green"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-sm-6 col-lg-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="subheader">Emprestados</div>
                         </div>
-                        <div class="h1 mb-0 text-warning">{{ equipamentos_emprestados }}</div>
-                        <div class="text-muted">
-                            <i class="ti ti-arrow-right"></i> Em utilização
+                        <div class="d-flex align-items-baseline">
+                            <div class="h1 mb-0 me-2">{{ equipamentos_emprestados }}</div>
+                            <div class="me-auto">
+                                <span class="badge bg-yellow"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -58,92 +59,89 @@
         </div>
 
         {% if user.is_staff and requisicoes_atrasadas %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger alert-dismissible" role="alert">
             <div class="d-flex">
                 <div>
-                    <i class="ti ti-alert-triangle"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 9v2m0 4v.01" /><path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" /></svg>
                 </div>
                 <div>
                     <h4 class="alert-title">Requisições Atrasadas</h4>
                     <div class="text-muted">Existem {{ requisicoes_atrasadas.count }} requisições atrasadas que necessitam atenção.</div>
-                    <div class="mt-3">
-                        <a href="{% url 'listar_requisicoes_pendentes' %}" class="btn btn-danger">Ver Requisições</a>
-                    </div>
                 </div>
             </div>
+            <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+        </div>
+        <div class="mb-3">
+            <a href="{% url 'listar_requisicoes_pendentes' %}" class="btn btn-danger">Ver Requisições</a>
         </div>
         {% endif %}
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="ti ti-list"></i> Minhas Requisições Recentes</h3>
-                        <div class="card-actions">
-                            <a href="{% url 'minhas_requisicoes' %}" class="btn btn-primary">Ver Todas</a>
-                        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Minhas Requisições Recentes</h3>
+                <div class="card-actions">
+                    <a href="{% url 'minhas_requisicoes' %}" class="btn btn-primary">Ver Todas</a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if minhas_requisicoes %}
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Data</th>
+                                <th>Período</th>
+                                <th>Equipamentos</th>
+                                <th>Estado</th>
+                                <th class="w-1"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in minhas_requisicoes %}
+                            <tr>
+                                <td class="text-muted">#{{ req.id }}</td>
+                                <td>{{ req.data_requisicao|date:"d/m/Y" }}</td>
+                                <td>{{ req.data_inicio_prevista|date:"d/m" }} - {{ req.data_fim_prevista|date:"d/m" }}</td>
+                                <td>{{ req.equipamentos.count }}</td>
+                                <td>
+                                    <span class="badge bg-{% if req.estado == 'pendente' %}warning{% elif req.estado == 'aprovada' %}green{% elif req.estado == 'rejeitada' %}danger{% elif req.estado == 'em_curso' %}blue{% elif req.estado == 'concluida' %}secondary{% endif %}">
+                                        {{ req.get_estado_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'detalhe_requisicao' req.id %}" class="btn btn-sm btn-primary">Ver</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty">
+                    <div class="empty-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" /><rect x="9" y="3" width="6" height="4" rx="2" /></svg>
                     </div>
-                    <div class="card-body">
-                        {% if minhas_requisicoes %}
-                        <div class="table-responsive">
-                            <table class="table table-vcenter card-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Data</th>
-                                        <th>Período</th>
-                                        <th>Equipamentos</th>
-                                        <th>Estado</th>
-                                        <th class="w-1"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for req in minhas_requisicoes %}
-                                    <tr>
-                                        <td class="text-muted">#{{ req.id }}</td>
-                                        <td>{{ req.data_requisicao|date:"d/m/Y" }}</td>
-                                        <td>{{ req.data_inicio_prevista|date:"d/m" }} - {{ req.data_fim_prevista|date:"d/m" }}</td>
-                                        <td>{{ req.equipamentos.count }}</td>
-                                        <td>
-                                            <span class="badge bg-{{ req.estado|yesno:'warning,success,danger' }}">
-                                                {{ req.get_estado_display }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <a href="{% url 'detalhe_requisicao' req.id %}" class="btn btn-sm btn-ghost-primary">
-                                                <i class="ti ti-eye"></i> Ver
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        {% else %}
-                        <div class="empty">
-                            <div class="empty-icon">
-                                <i class="ti ti-clipboard"></i>
-                            </div>
-                            <p class="empty-title">Ainda não fez nenhuma requisição</p>
-                            <p class="empty-subtitle text-muted">Comece criando a sua primeira requisição de equipamento</p>
-                            <div class="empty-action">
-                                <a href="{% url 'criar_requisicao' %}" class="btn btn-primary">
-                                    <i class="ti ti-plus"></i> Criar Primeira Requisição
-                                </a>
-                            </div>
-                        </div>
-                        {% endif %}
+                    <p class="empty-title">Ainda não fez nenhuma requisição</p>
+                    <p class="empty-subtitle text-muted">Comece por criar a sua primeira requisição de equipamento</p>
+                    <div class="empty-action">
+                        <a href="{% url 'criar_requisicao' %}" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                            Criar Primeira Requisição
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="mt-3">
+        <div class="mt-4">
             <a href="{% url 'listar_equipamentos' %}" class="btn btn-primary">
-                <i class="ti ti-camera"></i> Ver Equipamentos Disponíveis
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="13" r="3" /><path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h2m9 7v7a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" /></svg>
+                Ver Equipamentos Disponíveis
             </a>
             <a href="{% url 'criar_requisicao' %}" class="btn btn-success">
-                <i class="ti ti-plus"></i> Nova Requisição
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                Nova Requisição
             </a>
         </div>
     </div>

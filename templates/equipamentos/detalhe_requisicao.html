@@ -9,7 +9,7 @@
             <div class="col">
                 <div class="page-pretitle">
                     <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
+                        <ol class="breadcrumb" aria-label="breadcrumbs">
                             <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="{% url 'minhas_requisicoes' %}">Requisições</a></li>
                             <li class="breadcrumb-item active">Requisição #{{ requisicao.id }}</li>
@@ -20,15 +20,15 @@
             </div>
             <div class="col-auto ms-auto">
                 {% if requisicao.estado == 'pendente' %}
-                    <span class="badge bg-warning badge-lg">{{ requisicao.get_estado_display }}</span>
+                    <span class="badge bg-warning badge-pill">{{ requisicao.get_estado_display }}</span>
                 {% elif requisicao.estado == 'aprovada' %}
-                    <span class="badge bg-success badge-lg">{{ requisicao.get_estado_display }}</span>
+                    <span class="badge bg-green badge-pill">{{ requisicao.get_estado_display }}</span>
                 {% elif requisicao.estado == 'rejeitada' %}
-                    <span class="badge bg-danger badge-lg">{{ requisicao.get_estado_display }}</span>
+                    <span class="badge bg-danger badge-pill">{{ requisicao.get_estado_display }}</span>
                 {% elif requisicao.estado == 'em_curso' %}
-                    <span class="badge bg-primary badge-lg">{{ requisicao.get_estado_display }}</span>
+                    <span class="badge bg-blue badge-pill">{{ requisicao.get_estado_display }}</span>
                 {% elif requisicao.estado == 'concluida' %}
-                    <span class="badge bg-secondary badge-lg">{{ requisicao.get_estado_display }}</span>
+                    <span class="badge bg-secondary badge-pill">{{ requisicao.get_estado_display }}</span>
                 {% endif %}
             </div>
         </div>
@@ -42,48 +42,53 @@
                 <!-- Informações Gerais -->
                 <div class="card mb-3">
                     <div class="card-header">
-                        <h3 class="card-title"><i class="ti ti-info-circle"></i> Informações da Requisição</h3>
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="9" /><line x1="12" y1="8" x2="12.01" y2="8" /><polyline points="11 12 12 12 12 16 13 16" /></svg>
+                            Informações da Requisição
+                        </h3>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <div class="text-muted">Solicitante</div>
+                                    <label class="form-label">Solicitante</label>
                                     <div>{{ requisicao.utilizador.get_full_name|default:requisicao.utilizador.username }}</div>
                                 </div>
                                 <div class="mb-3">
-                                    <div class="text-muted">Data da Requisição</div>
+                                    <label class="form-label">Data da Requisição</label>
                                     <div>{{ requisicao.data_requisicao|date:"d/m/Y H:i" }}</div>
                                 </div>
                                 <div class="mb-3">
-                                    <div class="text-muted">Período Previsto</div>
-                                    <div>De {{ requisicao.data_inicio_prevista|date:"d/m/Y" }}</div>
-                                    <div>Até {{ requisicao.data_fim_prevista|date:"d/m/Y" }}</div>
-                                    <small class="text-muted">({{ requisicao.duracao_prevista }} dias)</small>
+                                    <label class="form-label">Período Previsto</label>
+                                    <div>
+                                        De {{ requisicao.data_inicio_prevista|date:"d/m/Y" }}<br>
+                                        Até {{ requisicao.data_fim_prevista|date:"d/m/Y" }}<br>
+                                        <small class="text-muted">({{ requisicao.duracao_prevista }} dias)</small>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 {% if requisicao.aprovado_por %}
                                 <div class="mb-3">
-                                    <div class="text-muted">Aprovado por</div>
+                                    <label class="form-label">Aprovado por</label>
                                     <div>{{ requisicao.aprovado_por.get_full_name|default:requisicao.aprovado_por.username }}</div>
                                 </div>
                                 <div class="mb-3">
-                                    <div class="text-muted">Data de Aprovação</div>
+                                    <label class="form-label">Data de Aprovação</label>
                                     <div>{{ requisicao.data_aprovacao|date:"d/m/Y H:i" }}</div>
                                 </div>
                                 {% endif %}
                                 
                                 {% if requisicao.data_entrega_real %}
                                 <div class="mb-3">
-                                    <div class="text-muted">Data de Entrega</div>
+                                    <label class="form-label">Data de Entrega</label>
                                     <div>{{ requisicao.data_entrega_real|date:"d/m/Y H:i" }}</div>
                                 </div>
                                 {% endif %}
                                 
                                 {% if requisicao.data_devolucao_real %}
                                 <div class="mb-3">
-                                    <div class="text-muted">Data de Devolução</div>
+                                    <label class="form-label">Data de Devolução</label>
                                     <div>{{ requisicao.data_devolucao_real|date:"d/m/Y H:i" }}</div>
                                 </div>
                                 {% endif %}
@@ -92,31 +97,23 @@
                         
                         <hr>
                         
-                        <div class="mb-3">
-                            <div class="text-muted mb-1">Motivo/Projeto</div>
-                            <div>{{ requisicao.motivo }}</div>
-                        </div>
+                        <h4>Motivo/Projeto:</h4>
+                        <p>{{ requisicao.motivo }}</p>
                         
                         {% if requisicao.observacoes_requisicao %}
-                        <div class="mb-3">
-                            <div class="text-muted mb-1">Observações da Requisição</div>
-                            <div>{{ requisicao.observacoes_requisicao }}</div>
-                        </div>
+                        <h4>Observações da Requisição:</h4>
+                        <p>{{ requisicao.observacoes_requisicao }}</p>
                         {% endif %}
                         
                         {% if requisicao.observacoes_aprovacao %}
                         <hr>
-                        <div class="mb-3">
-                            <div class="text-muted mb-1">Observações da Aprovação</div>
-                            <div class="alert alert-azure">{{ requisicao.observacoes_aprovacao }}</div>
-                        </div>
+                        <h4>Observações da Aprovação:</h4>
+                        <div class="alert alert-info" role="alert">{{ requisicao.observacoes_aprovacao }}</div>
                         {% endif %}
                         
                         {% if requisicao.observacoes_devolucao %}
-                        <div class="mb-3">
-                            <div class="text-muted mb-1">Observações da Devolução</div>
-                            <div class="alert alert-secondary">{{ requisicao.observacoes_devolucao }}</div>
-                        </div>
+                        <h4>Observações da Devolução:</h4>
+                        <div class="alert alert-secondary" role="alert">{{ requisicao.observacoes_devolucao }}</div>
                         {% endif %}
                     </div>
                 </div>
@@ -124,23 +121,22 @@
                 <!-- Equipamentos -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title"><i class="ti ti-camera"></i> Equipamentos Requisitados</h3>
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="13" r="3" /><path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h2m9 7v7a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" /></svg>
+                            Equipamentos Requisitados
+                        </h3>
                     </div>
                     <div class="list-group list-group-flush">
                         {% for equipamento in requisicao.equipamentos.all %}
                         <div class="list-group-item">
                             <div class="row align-items-center">
                                 <div class="col">
-                                    <div class="text-truncate">
-                                        <strong>{{ equipamento.nome }}</strong>
-                                    </div>
+                                    <h4 class="mb-1">{{ equipamento.nome }}</h4>
                                     <div class="text-muted">{{ equipamento.marca }} {{ equipamento.modelo }}</div>
                                     <small class="text-muted">Código: {{ equipamento.codigo_interno }}</small>
                                 </div>
                                 <div class="col-auto">
-                                    <a href="{% url 'detalhe_equipamento' equipamento.id %}" class="btn btn-sm btn-ghost-primary">
-                                        <i class="ti ti-eye"></i> Ver
-                                    </a>
+                                    <a href="{% url 'detalhe_equipamento' equipamento.id %}" class="btn btn-sm btn-primary">Ver</a>
                                 </div>
                             </div>
                         </div>
@@ -153,21 +149,27 @@
                 <!-- Ações (apenas para staff) -->
                 {% if user.is_staff %}
                 <div class="card mb-3">
-                    <div class="card-header bg-primary text-white">
-                        <h3 class="card-title"><i class="ti ti-settings"></i> Ações (Staff)</h3>
+                    <div class="card-header bg-blue-lt">
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" /><circle cx="12" cy="12" r="3" /></svg>
+                            Ações (Staff)
+                        </h3>
                     </div>
                     <div class="card-body">
                         {% if requisicao.estado == 'pendente' %}
                         <a href="{% url 'aprovar_requisicao' requisicao.id %}" class="btn btn-success w-100 mb-2">
-                            <i class="ti ti-circle-check"></i> Aprovar/Rejeitar
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                            Aprovar/Rejeitar
                         </a>
                         {% elif requisicao.estado == 'aprovada' %}
                         <a href="{% url 'registar_entrega' requisicao.id %}" class="btn btn-primary w-100 mb-2">
-                            <i class="ti ti-arrow-right"></i> Registar Entrega
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M16 3l4 4l-4 4" /><path d="M10 7l10 0" /><path d="M8 13l-4 4l4 4" /><path d="M4 17l9 0" /></svg>
+                            Registar Entrega
                         </a>
                         {% elif requisicao.estado == 'em_curso' %}
                         <a href="{% url 'registar_devolucao' requisicao.id %}" class="btn btn-warning w-100 mb-2">
-                            <i class="ti ti-arrow-left"></i> Registar Devolução
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11l-4 4l4 4m-4 -4h11a4 4 0 0 0 0 -8h-1" /></svg>
+                            Registar Devolução
                         </a>
                         {% endif %}
                     </div>
@@ -177,44 +179,77 @@
                 <!-- Timeline -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title"><i class="ti ti-clock"></i> Histórico</h3>
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 7v5l3 3" /></svg>
+                            Histórico
+                        </h3>
                     </div>
                     <div class="card-body">
-                        <ul class="steps steps-vertical">
-                            <li class="step-item active">
-                                <div class="h4 m-0">Requisição criada</div>
-                                <div class="text-muted">{{ requisicao.data_requisicao|date:"d/m/Y H:i" }}</div>
-                            </li>
+                        <div class="list-group list-group-flush list-group-hoverable">
+                            <div class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <span class="status-dot status-dot-animated bg-blue"></span>
+                                    </div>
+                                    <div class="col text-truncate">
+                                        <strong>Requisição criada</strong><br>
+                                        <div class="text-muted">{{ requisicao.data_requisicao|date:"d/m/Y H:i" }}</div>
+                                    </div>
+                                </div>
+                            </div>
                             
                             {% if requisicao.data_aprovacao %}
-                            <li class="step-item active">
-                                <div class="h4 m-0">{% if requisicao.estado == 'rejeitada' %}Rejeitada{% else %}Aprovada{% endif %}</div>
-                                <div class="text-muted">{{ requisicao.data_aprovacao|date:"d/m/Y H:i" }}</div>
-                            </li>
+                            <div class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <span class="status-dot {% if requisicao.estado == 'rejeitada' %}bg-danger{% else %}bg-green{% endif %}"></span>
+                                    </div>
+                                    <div class="col text-truncate">
+                                        <strong>{% if requisicao.estado == 'rejeitada' %}Rejeitada{% else %}Aprovada{% endif %}</strong><br>
+                                        <div class="text-muted">{{ requisicao.data_aprovacao|date:"d/m/Y H:i" }}</div>
+                                    </div>
+                                </div>
+                            </div>
                             {% endif %}
                             
                             {% if requisicao.data_entrega_real %}
-                            <li class="step-item active">
-                                <div class="h4 m-0">Equipamento entregue</div>
-                                <div class="text-muted">{{ requisicao.data_entrega_real|date:"d/m/Y H:i" }}</div>
-                            </li>
+                            <div class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <span class="status-dot bg-azure"></span>
+                                    </div>
+                                    <div class="col text-truncate">
+                                        <strong>Equipamento entregue</strong><br>
+                                        <div class="text-muted">{{ requisicao.data_entrega_real|date:"d/m/Y H:i" }}</div>
+                                    </div>
+                                </div>
+                            </div>
                             {% endif %}
                             
                             {% if requisicao.data_devolucao_real %}
-                            <li class="step-item active">
-                                <div class="h4 m-0">Equipamento devolvido</div>
-                                <div class="text-muted">{{ requisicao.data_devolucao_real|date:"d/m/Y H:i" }}</div>
-                            </li>
+                            <div class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <span class="status-dot bg-secondary"></span>
+                                    </div>
+                                    <div class="col text-truncate">
+                                        <strong>Equipamento devolvido</strong><br>
+                                        <div class="text-muted">{{ requisicao.data_devolucao_real|date:"d/m/Y H:i" }}</div>
+                                    </div>
+                                </div>
+                            </div>
                             {% endif %}
-                        </ul>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="mt-3">
+        <div class="mt-4">
             <a href="{% url 'minhas_requisicoes' %}" class="btn">
-                <i class="ti ti-arrow-left"></i> Voltar
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="5" y1="12" x2="19" y2="12" /><line x1="5" y1="12" x2="11" y2="18" /><line x1="5" y1="12" x2="11" y2="6" /></svg>
+                Voltar
             </a>
         </div>
     </div>
