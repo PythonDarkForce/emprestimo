@@ -262,6 +262,36 @@ def api_contadores(request):
     return JsonResponse(contadores)
 
 
+@login_required
+@require_http_methods(["GET"])
+def api_cronograma_equipamento(request, pk):
+    """API para obter cronograma de empréstimos de um equipamento"""
+    MOTIVO_MAX_LENGTH = 100
+    
+    equipamento = get_object_or_404(Equipamento, pk=pk)
+    
+    # Buscar todas as requisições do equipamento (aprovadas, em curso ou concluídas)
+    requisicoes = Requisicao.objects.filter(
+        equipamentos=equipamento,
+        estado__in=['aprovada', 'em_curso', 'concluida']
+    ).select_related('utilizador')
+    
+    eventos = []
+    for req in requisicoes:
+        evento = {
+            'id': req.id,
+            'start': req.data_inicio_prevista.isoformat(),
+            'end': req.data_fim_prevista.isoformat(),
+            'utilizador': req.utilizador.get_full_name() or req.utilizador.username,
+            'estado': req.estado,
+            'estado_display': req.get_estado_display(),
+            'motivo': req.motivo[:MOTIVO_MAX_LENGTH] if len(req.motivo) > MOTIVO_MAX_LENGTH else req.motivo,
+        }
+        eventos.append(evento)
+    
+    return JsonResponse({'eventos': eventos})
+
+
 """
 # Resumo das Views em equipamentos/views.py
 

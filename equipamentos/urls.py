@@ -25,4 +25,5 @@ urlpatterns = [
     
     # API
     path('api/contadores/', views.api_contadores, name='api_contadores'),
+    path('api/equipamentos/<int:pk>/cronograma/', views.api_cronograma_equipamento, name='api_cronograma_equipamento'),
 ]
