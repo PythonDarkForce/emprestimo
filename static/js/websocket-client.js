@@ -236,20 +236,32 @@ class WebSocketManager {
     // Mostrar notificação na interface
     mostrarNotificacao(titulo, mensagem, tipo = 'info', link = null) {
         const notificacao = document.createElement('div');
-        notificacao.className = `alert alert-${tipo} alert-dismissible fade show notification-toast`;
+        // Map Bootstrap alert types to Tabler types
+        const tipoMap = {
+            'success': 'success',
+            'danger': 'danger',
+            'warning': 'warning',
+            'info': 'info'
+        };
+        const tipoTabler = tipoMap[tipo] || 'info';
+        notificacao.className = `alert alert-${tipoTabler} alert-dismissible notification-toast`;
         notificacao.setAttribute('role', 'alert');
 
         let conteudo = `
-            <strong>${titulo}</strong><br>
-            ${mensagem}
+            <div class="d-flex">
+                <div>
+                    <h4 class="alert-title">${titulo}</h4>
+                    <div class="text-muted">${mensagem}</div>
+                </div>
+            </div>
         `;
 
         if (link) {
-            conteudo += `<br><a href="${link}" class="alert-link">Ver detalhes →</a>`;
+            conteudo += `<div class="mt-2"><a href="${link}" class="btn btn-sm btn-${tipoTabler}">Ver detalhes</a></div>`;
         }
 
         conteudo += `
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
         `;
 
         notificacao.innerHTML = conteudo;
@@ -265,7 +277,7 @@ class WebSocketManager {
         container.appendChild(notificacao);
 
         setTimeout(() => {
-            notificacao.classList.remove('show');
+            notificacao.style.opacity = '0';
             setTimeout(() => notificacao.remove(), 300);
         }, 10000);
     }
@@ -297,12 +309,20 @@ class WebSocketManager {
     // Mostrar notificação do sistema (menos intrusiva)
     mostrarNotificacaoSistema(mensagem, tipo = 'info') {
         const toast = document.createElement('div');
-        toast.className = `toast align-items-center text-white bg-${tipo} border-0`;
+        // Map to Tabler color classes
+        const tipoMap = {
+            'success': 'green',
+            'danger': 'red',
+            'warning': 'yellow',
+            'info': 'blue'
+        };
+        const bgColor = tipoMap[tipo] || 'blue';
+        toast.className = `toast align-items-center text-bg-${bgColor} border-0`;
         toast.setAttribute('role', 'alert');
         toast.innerHTML = `
             <div class="d-flex">
                 <div class="toast-body">${mensagem}</div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
             </div>
         `;
 
@@ -315,6 +335,7 @@ class WebSocketManager {
         }
 
         container.appendChild(toast);
+        // Bootstrap Toast API is compatible with Tabler
         const bsToast = new bootstrap.Toast(toast);
         bsToast.show();
     }
@@ -455,16 +476,17 @@ class WebSocketManager {
 
     // Obter classe CSS para estado
     getEstadoClass(estado) {
+        // Using Tabler's color classes
         const classes = {
-            'pendente': 'bg-warning text-dark',
-            'aprovada': 'bg-success',
+            'pendente': 'bg-warning',
+            'aprovada': 'bg-green',
             'rejeitada': 'bg-danger',
-            'em_curso': 'bg-primary',
+            'em_curso': 'bg-blue',
             'concluida': 'bg-secondary',
             'atrasada': 'bg-danger',
-            'disponivel': 'bg-success',
-            'emprestado': 'bg-warning',
-            'manutencao': 'bg-danger',
+            'disponivel': 'bg-green',
+            'emprestado': 'bg-yellow',
+            'manutencao': 'bg-red',
             'inativo': 'bg-secondary'
         };
         return classes[estado] || 'bg-secondary';
